@@ -1,7 +1,0 @@
-/node_modules/
-.gitignore
-.idea
-/packages/backend/dist/
-/packages/backend/node_modules/
-/packages/backend/config.env
-/packages/frontend/node_modules/
