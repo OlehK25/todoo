@@ -10,6 +10,7 @@ services:
     depends_on:
       - mysql
     volumes:
+      - ./packages/backend:/app
       - backend-node-modules:/app/node_modules
     environment:
       DATABASE_URL: "${DB_URL}"
@@ -43,6 +44,7 @@ services:
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:
+      - ./packages/frontend:/app
       - frontend-node-modules:/app/node_modules
     environment:
       PORT: "${FRONTEND_PORT}"

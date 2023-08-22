@@ -1,51 +1,30 @@
-import React, {
-  FC,
-  ReactElement,
-  useContext,
-  useEffect,
-} from 'react';
-import {
-  useMutation,
-  useQuery,
-} from '@tanstack/react-query';
-import {
-  Alert,
-  Box,
-  Grid,
-  LinearProgress,
-} from '@mui/material';
-import { format } from 'date-fns';
+import React, { FC, ReactElement, useContext, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Alert, Box, Grid, LinearProgress } from "@mui/material";
+import { format } from "date-fns";
 
-import { TaskCounter } from '../taskCounter/TaskCounter';
-import { Task } from '../task/Task';
-import { sendApiRequest } from '../../helpers/sendApiRequest';
-import { ITaskAPI } from './interfaces/ITaskAPI';
-import { Status } from '../CreateTaskForm/enums/status';
-import { IUpdateTask } from '../CreateTaskForm/interfaces/IUpdateTask';
-import { countTasks } from './helpers/countTasks';
-import { TaskStatusChangedContext } from '../../context/taskStatusChangedContext/TaskStatusChangedContext';
+import { TaskCounter } from "../taskCounter/TaskCounter";
+import { Task } from "../task/Task";
+import { sendApiRequest } from "../../helpers/sendApiRequest";
+import { ITaskAPI } from "./interfaces/ITaskAPI";
+import { Status } from "../CreateTaskForm/enums/status";
+import { IUpdateTask } from "../CreateTaskForm/interfaces/IUpdateTask";
+import { countTasks } from "./helpers/countTasks";
+import { TaskStatusChangedContext } from "../../context";
 
 export const TaskArea: FC = (): ReactElement => {
-  const taskUpdatedContext = useContext(
-    TaskStatusChangedContext,
+  const taskUpdatedContext = useContext(TaskStatusChangedContext);
+
+  const { error, isLoading, data, refetch } = useQuery(["tasks"], async () =>
+    sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET"),
   );
 
-  const { error, isLoading, data, refetch } = useQuery(
-    ['tasks'],
-    async () =>
-      sendApiRequest<ITaskAPI[]>(
-        'http://localhost:3500/tasks',
-        'GET',
-      ),
+  const updateTaskMutation = useMutation((data: IUpdateTask) =>
+    sendApiRequest("http://localhost:3500/tasks", "PUT", data),
   );
 
-  const updateTaskMutation = useMutation(
-    (data: IUpdateTask) =>
-      sendApiRequest(
-        'http://localhost:3500/tasks',
-        'PUT',
-        data,
-      ),
+  const deleteTaskMutation = useMutation((id: string) =>
+    sendApiRequest(`http://localhost:3500/tasks/${id}`, "DELETE"),
   );
 
   useEffect(() => {
@@ -58,15 +37,19 @@ export const TaskArea: FC = (): ReactElement => {
     }
   }, [updateTaskMutation.isSuccess]);
 
+  useEffect(() => {
+    if (deleteTaskMutation.isSuccess) {
+      taskUpdatedContext.toggle();
+    }
+  }, [deleteTaskMutation.isSuccess]);
+
   function handleStatusChange(
     e: React.ChangeEvent<HTMLInputElement>,
     id: string,
   ) {
     updateTaskMutation.mutate({
       id,
-      status: e.target.checked
-        ? Status.inProgress
-        : Status.todo,
+      status: e.target.checked ? Status.inProgress : Status.todo,
     });
   }
 
@@ -85,17 +68,10 @@ export const TaskArea: FC = (): ReactElement => {
   return (
     <Grid item md={8} px={4}>
       <Box mb={8} px={4}>
-        <h2>
-          Status Of Your Tasks As On{' '}
-          {format(new Date(), 'PPPP')}
-        </h2>
+        <h2>Status Of Your Tasks As On {format(new Date(), "PPPP")}</h2>
       </Box>
 
-      <Grid
-        container
-        display="flex"
-        justifyContent="center"
-      >
+      <Grid container display="flex" justifyContent="center">
         <Grid
           item
           display="flex"
@@ -107,54 +83,32 @@ export const TaskArea: FC = (): ReactElement => {
           mb={8}
         >
           <TaskCounter
-            count={
-              data
-                ? countTasks(data, Status.todo)
-                : undefined
-            }
+            count={data ? countTasks(data, Status.todo) : undefined}
             status={Status.todo}
           />
           <TaskCounter
-            count={
-              data
-                ? countTasks(data, Status.inProgress)
-                : undefined
-            }
+            count={data ? countTasks(data, Status.inProgress) : undefined}
             status={Status.inProgress}
           />
           <TaskCounter
-            count={
-              data
-                ? countTasks(data, Status.completed)
-                : undefined
-            }
+            count={data ? countTasks(data, Status.completed) : undefined}
             status={Status.completed}
           />
         </Grid>
 
-        <Grid
-          item
-          display="flex"
-          flexDirection="column"
-          md={8}
-          xs={10}
-        >
+        <Grid item display="flex" flexDirection="column" md={8} xs={10}>
           <>
             {error && (
               <Alert severity="error">
-                There was an error fetching your tasks.
-                Please try again later.
+                There was an error fetching your tasks. Please try again later.
               </Alert>
             )}
 
-            {!error &&
-              Array.isArray(data) &&
-              data.length === 0 && (
-                <Alert severity="warning">
-                  You don`t have any tasks yet. Create one
-                  now.
-                </Alert>
-              )}
+            {!error && Array.isArray(data) && data.length === 0 && (
+              <Alert severity="warning">
+                You don`t have any tasks yet. Create one now.
+              </Alert>
+            )}
 
             {isLoading ? (
               <LinearProgress />
@@ -174,6 +128,7 @@ export const TaskArea: FC = (): ReactElement => {
                     status={task.status}
                     onStatusChange={handleStatusChange}
                     onClick={handlerMarkComplete}
+                    onDelete={() => deleteTaskMutation.mutate(task.id)}
                   />
                 ) : (
                   false

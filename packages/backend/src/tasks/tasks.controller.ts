@@ -92,6 +92,29 @@ class TasksController {
       return res.json({ error: "Internal Server Error" }).status(500);
     }
   }
+
+  public async deleteTask(req: Request, res: Response): Promise<Response> {
+    try {
+      const taskId: string = req.params.id;
+
+      const task = await AppDataSource.getRepository(Task).find({
+        where: { id: taskId },
+      });
+
+      if (!task) {
+        return res
+          .status(404)
+          .json({ error: "The task with the given ID doesn't exist" });
+      }
+
+      await AppDataSource.getRepository(Task).delete(taskId);
+
+      return res.status(204).send();
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
 }
 
 export const taskController = new TasksController();
