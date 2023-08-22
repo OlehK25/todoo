@@ -1,0 +1,53 @@
+services:
+  backend:
+    restart: always
+    container_name: backend
+    build:
+      context: ./packages/backend
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - mysql
+    volumes:
+      - backend-node-modules:/app/node_modules
+    environment:
+      DATABASE_URL: "${DB_URL}"
+      NODE_ENV: "${NODE_ENV}"
+      PORT: "${PORT}"
+      MYSQL_HOST: "${MYSQL_HOST}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_DB: "${MYSQL_DB}"
+
+  mysql:
+    container_name: mysql
+    restart: always
+    image: mysql:latest
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DB}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+
+  frontend:
+    restart: always
+    container_name: frontend
+    build:
+      context: ./packages/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    volumes:
+      - frontend-node-modules:/app/node_modules
+    environment:
+      PORT: "${FRONTEND_PORT}"
+
+volumes:
+  todo-mysql-data:
+  backend-node-modules:
+  frontend-node-modules:
