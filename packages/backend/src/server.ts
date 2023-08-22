@@ -7,7 +7,7 @@ import { AppDataSource } from "./data-source";
 import { tasksRouter } from "./tasks/tasks.router";
 
 const app: Express = express();
-dotenv.config({ path: "./config.env" });
+dotenv.config({ path: "../../.env" });
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -22,7 +22,7 @@ AppDataSource.initialize()
 
 app.use("/", tasksRouter);
 
-const port: string | number = process.env.PORT || 3500;
+const port = process.env.PORT;
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at ${port}`);
