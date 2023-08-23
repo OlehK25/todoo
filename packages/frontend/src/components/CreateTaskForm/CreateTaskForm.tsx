@@ -27,8 +27,8 @@ import { ICreateTask } from "../taskArea/interfaces/ICreateTask";
 import { TaskStatusChangedContext } from "../../context/taskStatusChangedContext/TaskStatusChangedContext";
 
 export const CreateTaskForm: FC = (): ReactElement => {
-  const [title, setTitle] = useState<string | undefined>(undefined);
-  const [description, setDescription] = useState<string | undefined>(undefined);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
   const [date, setDate] = useState<Date | null>(new Date());
   const [status, setStatus] = useState<string>(Status.todo);
   const [priority, setPriority] = useState<string>(Priority.normal);
@@ -59,6 +59,12 @@ export const CreateTaskForm: FC = (): ReactElement => {
     if (createTaskMutation.isSuccess) {
       setShowSuccessAlert(true);
       tasksUpdatedContext.toggle();
+
+      setTitle("");
+      setDescription("");
+      setDate(new Date());
+      setStatus(Status.todo);
+      setPriority(Priority.normal);
     }
     const successAlertTimeout = setTimeout(() => {
       setShowSuccessAlert(false);
@@ -97,12 +103,14 @@ export const CreateTaskForm: FC = (): ReactElement => {
 
       <Stack sx={{ width: "100%" }} spacing={2}>
         <TaskTitleField
+          value={title}
           disabled={createTaskMutation.isLoading}
           onChange={(e) => {
             setTitle(e.target.value);
           }}
         />
         <TaskDescriptionField
+          value={description}
           disabled={createTaskMutation.isLoading}
           onChange={(e) => {
             setDescription(e.target.value);

@@ -1,17 +1,17 @@
-import { TaskCounterStatusType } from '../interfaces/ITaskCounter';
-import { Status } from '../../CreateTaskForm/enums/status';
+import { TaskCounterStatusType } from "../interfaces/ITaskCounter";
+import { Status } from "../../CreateTaskForm/enums/status";
 
 export const emitCorrectLabel = (
-  status: TaskCounterStatusType,
+  status: TaskCounterStatusType | string,
 ): string => {
   switch (status) {
     case Status.todo:
       return "Todo's";
     case Status.inProgress:
-      return 'In progress';
+      return "In progress";
     case Status.completed:
-      return 'Completed';
+      return "Completed";
     default:
-      return "Todo's";
+      return "ALL";
   }
 };

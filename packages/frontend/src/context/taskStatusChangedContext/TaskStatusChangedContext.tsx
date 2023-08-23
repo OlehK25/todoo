@@ -4,16 +4,16 @@ import React, {
   PropsWithChildren,
   ReactElement,
   useState,
-} from 'react';
+} from "react";
 
 export const TaskStatusChangedContext = createContext({
   updated: false,
   toggle: () => {},
 });
 
-export const TaskStatusChangedProvider: FC<
-  PropsWithChildren
-> = (props): ReactElement => {
+export const TaskStatusChangedProvider: FC<PropsWithChildren> = (
+  props,
+): ReactElement => {
   const [updated, setUpdated] = useState(false);
 
   function toggleHandler() {
