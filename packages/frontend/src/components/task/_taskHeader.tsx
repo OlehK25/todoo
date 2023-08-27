@@ -8,10 +8,11 @@ import { ModalDeleteWindow } from "../modal/ModalDelete";
 
 export const TaskHeader: FC<ITaskHeader> = (props): ReactElement => {
   const {
+    id,
     title = "This is a test title",
     date = new Date(),
     showCloseIcon = false,
-    onDelete = () => console.log("Delete"),
+    onDelete = (e) => console.log(e),
   } = props;
 
   return (
@@ -24,12 +25,13 @@ export const TaskHeader: FC<ITaskHeader> = (props): ReactElement => {
           <Chip variant="outlined" label={`${format(date, "PPP")}`} />
         </Box>
       )}
-      {showCloseIcon && <ModalDeleteWindow onDelete={onDelete} />}
+      {showCloseIcon && <ModalDeleteWindow id={id} onDelete={onDelete} />}
     </Box>
   );
 };
 
 TaskHeader.propTypes = {
+  id: PropTypes.string.isRequired,
   title: PropTypes.string,
   date: PropTypes.instanceOf(Date),
   showCloseIcon: PropTypes.bool,

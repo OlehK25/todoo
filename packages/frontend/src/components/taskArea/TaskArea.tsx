@@ -22,6 +22,7 @@ import { TaskStatusChangedContext } from "../../context";
 export const TaskArea: FC = (): ReactElement => {
   const taskUpdatedContext = useContext(TaskStatusChangedContext);
   const [selectedStatus, setSelectedStatus] = useState<Status | string>("ALL");
+  const [noCount, setNoCount] = useState(false);
 
   const { error, isLoading, data, refetch } = useQuery(["tasks"], async () =>
     sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET"),
@@ -34,6 +35,11 @@ export const TaskArea: FC = (): ReactElement => {
   const deleteTaskMutation = useMutation((id: string) =>
     sendApiRequest(`http://localhost:3500/tasks/${id}`, "DELETE"),
   );
+
+  function countTasksByStatus(status: Status | string) {
+    if (status === "ALL") return data?.length;
+    return data?.filter((task) => task.status === status)?.length;
+  }
 
   useEffect(() => {
     refetch();
@@ -55,6 +61,11 @@ export const TaskArea: FC = (): ReactElement => {
     }
   }, [deleteTaskMutation.isSuccess]);
 
+  useEffect(() => {
+    const count = countTasksByStatus(selectedStatus);
+    setNoCount(count === 0);
+  }, [taskUpdatedContext.updated, data, selectedStatus]);
+
   function handleStatusChange(
     e: React.ChangeEvent<HTMLInputElement>,
     id: string,
@@ -75,6 +86,15 @@ export const TaskArea: FC = (): ReactElement => {
       id,
       status: Status.completed,
     });
+  }
+
+  function handlerDeleteTask(
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLAnchorElement>,
+    id: string,
+  ) {
+    deleteTaskMutation.mutate(id);
   }
 
   const toggleSelectedStatus = (status: Status | string) => {
@@ -149,6 +169,13 @@ export const TaskArea: FC = (): ReactElement => {
               </Alert>
             )}
 
+            {noCount && (
+              <Alert severity="warning">
+                You don`t have any tasks with the selected status yet. Create
+                one now.
+              </Alert>
+            )}
+
             {isLoading ? (
               <LinearProgress />
             ) : (
@@ -163,7 +190,8 @@ export const TaskArea: FC = (): ReactElement => {
                     : selectedStatus === Status.inProgress
                     ? task.status === Status.inProgress
                     : task.status === Status.todo ||
-                      task.status === Status.inProgress
+                      task.status === Status.inProgress ||
+                      task.status === Status.completed
                 ) ? (
                   <Task
                     id={task.id}
@@ -175,7 +203,7 @@ export const TaskArea: FC = (): ReactElement => {
                     status={task.status}
                     onStatusChange={handleStatusChange}
                     onClick={handlerMarkComplete}
-                    onDelete={() => deleteTaskMutation.mutate(task.id)}
+                    onDelete={handlerDeleteTask}
                   />
                 ) : (
                   false

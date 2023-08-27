@@ -20,7 +20,7 @@ export const Task: FC<ITask> = (props): ReactElement => {
     status = Status.completed,
     onStatusChange = (e) => console.log(e),
     onClick = (e) => console.log(e),
-    onDelete = () => console.log("Delete"),
+    onDelete = (e) => console.log(e),
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
@@ -35,7 +35,11 @@ export const Task: FC<ITask> = (props): ReactElement => {
       p={2}
       sx={{
         width: "100%",
-        backgroundColor: "background.paper",
+        backgroundColor: `${
+          status === Status.completed
+            ? "rgba(158,159,165,0.18)"
+            : "background.paper"
+        }`,
         borderRadius: "8px",
         border: "1px solid",
         borderColor: `${renderPriorityBorderColor(priority)}`,
@@ -44,6 +48,7 @@ export const Task: FC<ITask> = (props): ReactElement => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <TaskHeader
+        id={id}
         title={title}
         date={date}
         showCloseIcon={isHovered}

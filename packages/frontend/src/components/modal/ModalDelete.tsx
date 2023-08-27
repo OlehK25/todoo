@@ -28,7 +28,7 @@ export const ModalDeleteWindow: FC<IModalDelete> = (props): ReactElement => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const { onDelete } = props;
+  const { id, onDelete } = props;
 
   return (
     <div>
@@ -70,9 +70,9 @@ export const ModalDeleteWindow: FC<IModalDelete> = (props): ReactElement => {
               variant="outlined"
               color="warning"
               startIcon={<DeleteIcon />}
-              onClick={() => {
+              onClick={(e) => {
                 if (onDelete) {
-                  onDelete();
+                  onDelete(e, id);
                 }
                 handleClose();
               }}
@@ -95,5 +95,6 @@ export const ModalDeleteWindow: FC<IModalDelete> = (props): ReactElement => {
 };
 
 ModalDeleteWindow.propTypes = {
+  id: PropTypes.string.isRequired,
   onDelete: PropTypes.func,
 };
