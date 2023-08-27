@@ -1,4 +1,4 @@
-import { Status } from '../../CreateTaskForm/enums/status';
+import { Status } from "../../CreateTaskForm/enums/status";
 
 export type TaskCounterStatusType =
   | Status.todo
@@ -6,6 +6,7 @@ export type TaskCounterStatusType =
   | Status.completed;
 
 export interface ITaskCounter {
+  selectedStatus: Status | string;
   count?: number;
-  status?: TaskCounterStatusType;
+  status?: TaskCounterStatusType | string;
 }

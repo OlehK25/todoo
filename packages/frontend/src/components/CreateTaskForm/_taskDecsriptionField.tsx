@@ -1,12 +1,11 @@
-import React, { FC, ReactElement } from 'react';
-import { TextField } from '@mui/material';
-import { ITextField } from './interfaces/ITextField';
-import PropTypes from 'prop-types';
+import React, { FC, ReactElement } from "react";
+import { TextField } from "@mui/material";
+import { ITextField } from "./interfaces/ITextField";
+import PropTypes from "prop-types";
 
-export const TaskDescriptionField: FC<ITextField> = (
-  props,
-): ReactElement => {
+export const TaskDescriptionField: FC<ITextField> = (props): ReactElement => {
   const {
+    value = "",
     onChange = (e) => console.log(e),
     disabled = false,
   } = props;
@@ -17,6 +16,7 @@ export const TaskDescriptionField: FC<ITextField> = (
       name="description"
       label="Task Description"
       placeholder="Task Description"
+      value={value}
       variant="outlined"
       size="small"
       multiline
@@ -29,6 +29,7 @@ export const TaskDescriptionField: FC<ITextField> = (
 };
 
 TaskDescriptionField.propTypes = {
+  value: PropTypes.string,
   onChange: PropTypes.func,
   disabled: PropTypes.bool,
 };

@@ -1,18 +1,11 @@
-import React, { FC, ReactElement } from 'react';
-import {
-  Box,
-  Button,
-  FormControlLabel,
-  Switch,
-} from '@mui/material';
+import React, { FC, ReactElement } from "react";
+import { Box, Button, Chip, FormControlLabel, Switch } from "@mui/material";
 
-import { ITaskFooter } from './interfaces/ITaskFooter';
-import PropTypes from 'prop-types';
-import { Status } from '../CreateTaskForm/enums/status';
+import { ITaskFooter } from "./interfaces/ITaskFooter";
+import PropTypes from "prop-types";
+import { Status } from "../CreateTaskForm/enums/status";
 
-export const TaskFooter: FC<ITaskFooter> = (
-  props,
-): ReactElement => {
+export const TaskFooter: FC<ITaskFooter> = (props): ReactElement => {
   const {
     id,
     status,
@@ -37,17 +30,23 @@ export const TaskFooter: FC<ITaskFooter> = (
           />
         }
       />
-      <Button
-        variant="contained"
-        color="success"
-        size="small"
-        sx={{
-          color: '#ffffff',
-        }}
-        onClick={(e) => onClick(e, id)}
-      >
-        Mark Complete
-      </Button>
+      {status !== Status.completed ? (
+        <Button
+          variant="contained"
+          color="success"
+          size="small"
+          sx={{
+            color: "#ffffff",
+          }}
+          onClick={(e) => onClick(e, id)}
+        >
+          Mark Complete
+        </Button>
+      ) : (
+        <Box fontStyle="italic">
+          <Chip label="Completed ✅" />
+        </Box>
+      )}
     </Box>
   );
 };

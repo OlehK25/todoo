@@ -1,16 +1,13 @@
-import React, { FC, ReactElement } from 'react';
-import { Avatar, Box, Typography } from '@mui/material';
-import PropTypes from 'prop-types';
+import React, { FC, ReactElement } from "react";
+import { Avatar, Box, Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
-import { ITaskCounter } from './interfaces/ITaskCounter';
-import { Status } from '../CreateTaskForm/enums/status';
-import { emitCorrectBorderColor } from './helpers/emitCorrectBorderColor';
-import { emitCorrectLabel } from './helpers/emitCorrectLabel';
+import { ITaskCounter } from "./interfaces/ITaskCounter";
+import { emitCorrectBorderColor } from "./helpers/emitCorrectBorderColor";
+import { emitCorrectLabel } from "./helpers/emitCorrectLabel";
 
-export const TaskCounter: FC<ITaskCounter> = (
-  props,
-): ReactElement => {
-  const { status = Status.completed, count = 0 } = props;
+export const TaskCounter: FC<ITaskCounter> = (props): ReactElement => {
+  const { status = "ALL", count = 0, selectedStatus = "ALL" } = props;
 
   return (
     <>
@@ -22,14 +19,14 @@ export const TaskCounter: FC<ITaskCounter> = (
       >
         <Avatar
           sx={{
-            backgroundColor: 'transparent',
-            border: '5px solid',
-            width: '96px',
-            height: '96px',
-            marginBottom: '16px',
-            borderColor: `${emitCorrectBorderColor(
-              status,
-            )}`,
+            backgroundColor: `${
+              selectedStatus === status ? "#3D246C" : "transparent"
+            }`,
+            border: "5px solid",
+            width: "96px",
+            height: "96px",
+            marginBottom: "16px",
+            borderColor: `${emitCorrectBorderColor(status)}`,
           }}
         >
           <Typography color="#ffffff" variant="h4">
@@ -51,9 +48,5 @@ export const TaskCounter: FC<ITaskCounter> = (
 
 TaskCounter.propTypes = {
   count: PropTypes.number,
-  status: PropTypes.oneOf([
-    Status.todo,
-    Status.inProgress,
-    Status.completed,
-  ]),
+  status: PropTypes.string,
 };
