@@ -9,6 +9,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Alert, Box, Button, Grid, LinearProgress } from "@mui/material";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 
 import { TaskCounter } from "../taskCounter/TaskCounter";
 import { Task } from "../task/Task";
@@ -28,8 +34,15 @@ export const TaskArea: FC = (): ReactElement => {
     sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET"),
   );
 
+  const [tasks, setTasks] = useState(data);
+
   const updateTaskMutation = useMutation((data: IUpdateTask) =>
     sendApiRequest("http://localhost:3500/tasks", "PUT", data),
+  );
+
+  const updateTaskOrderMutation = useMutation(
+    (data: { id: string; order: number }) =>
+      sendApiRequest(`http://localhost:3500/tasks/order`, "PUT", data),
   );
 
   const deleteTaskMutation = useMutation((id: string) =>
@@ -49,22 +62,22 @@ export const TaskArea: FC = (): ReactElement => {
     if (updateTaskMutation.isSuccess) {
       toast.success(`Task updated successfully!!!`);
       taskUpdatedContext.toggle();
-    }
-  }, [updateTaskMutation.isSuccess]);
-
-  useEffect(() => {
-    if (deleteTaskMutation.isSuccess) {
+    } else if (deleteTaskMutation.isSuccess) {
       toast.success(`Task deleted successfully!!!`);
       taskUpdatedContext.toggle();
     } else if (deleteTaskMutation.isError) {
       toast.error(`Error deleting Task. Please try again later. ${error}`);
     }
-  }, [deleteTaskMutation.isSuccess]);
+  }, [updateTaskMutation.isSuccess, deleteTaskMutation.isSuccess]);
 
   useEffect(() => {
     const count = countTasksByStatus(selectedStatus);
     setNoCount(count === 0);
   }, [taskUpdatedContext.updated, data, selectedStatus]);
+
+  useEffect(() => {
+    setTasks(data);
+  }, [data]);
 
   function handleStatusChange(
     e: React.ChangeEvent<HTMLInputElement>,
@@ -97,6 +110,25 @@ export const TaskArea: FC = (): ReactElement => {
     deleteTaskMutation.mutate(id);
   }
 
+  function handleOnDragEnd(result: DropResult) {
+    if (!result.destination) return;
+
+    if (tasks) {
+      const reorderedTasks = Array.from(tasks);
+      const [removed] = reorderedTasks.splice(result.source.index, 1);
+      reorderedTasks.splice(result.destination.index, 0, removed);
+
+      setTasks(reorderedTasks);
+
+      reorderedTasks.forEach((task, index) => {
+        updateTaskOrderMutation.mutate({
+          id: task.id,
+          order: index,
+        });
+      });
+    }
+  }
+
   const toggleSelectedStatus = (status: Status | string) => {
     if (selectedStatus === status) {
       setSelectedStatus("ALL");
@@ -104,6 +136,21 @@ export const TaskArea: FC = (): ReactElement => {
       setSelectedStatus(status);
     }
   };
+
+  const filteredTasks = Array.isArray(tasks)
+    ? tasks.filter((task) => {
+        switch (selectedStatus) {
+          case Status.completed:
+            return task.status === Status.completed;
+          case Status.todo:
+            return task.status === Status.todo;
+          case Status.inProgress:
+            return task.status === Status.inProgress;
+          default:
+            return true;
+        }
+      })
+    : [];
 
   return (
     <Grid item md={8} px={4}>
@@ -176,40 +223,46 @@ export const TaskArea: FC = (): ReactElement => {
               </Alert>
             )}
 
-            {isLoading ? (
-              <LinearProgress />
-            ) : (
-              Array.isArray(data) &&
-              data.length > 0 &&
-              data.map((task) => {
-                return (
-                  selectedStatus === Status.completed
-                    ? task.status === Status.completed
-                    : selectedStatus === Status.todo
-                    ? task.status === Status.todo
-                    : selectedStatus === Status.inProgress
-                    ? task.status === Status.inProgress
-                    : task.status === Status.todo ||
-                      task.status === Status.inProgress ||
-                      task.status === Status.completed
-                ) ? (
-                  <Task
-                    id={task.id}
-                    key={task.id}
-                    title={task.title}
-                    date={new Date(task.date)}
-                    description={task.description}
-                    priority={task.priority}
-                    status={task.status}
-                    onStatusChange={handleStatusChange}
-                    onClick={handlerMarkComplete}
-                    onDelete={handlerDeleteTask}
-                  />
-                ) : (
-                  false
-                );
-              })
-            )}
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+              <Droppable droppableId="tasks">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {isLoading ? (
+                      <LinearProgress />
+                    ) : (
+                      filteredTasks.map((task, index) => (
+                        <Draggable
+                          key={task.id}
+                          draggableId={task.id}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <Task
+                                id={task.id}
+                                title={task.title}
+                                date={new Date(task.date)}
+                                description={task.description}
+                                priority={task.priority}
+                                status={task.status}
+                                onStatusChange={handleStatusChange}
+                                onClick={handlerMarkComplete}
+                                onDelete={handlerDeleteTask}
+                              />
+                            </div>
+                          )}
+                        </Draggable>
+                      ))
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </>
         </Grid>
       </Grid>

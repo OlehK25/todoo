@@ -8,3 +8,4 @@ tasksRouter.get("/tasks", taskController.getAllTasks);
 tasksRouter.post("/tasks", createValidator, taskController.createTask);
 tasksRouter.put("/tasks", updateValidator, taskController.updateTask);
 tasksRouter.delete("/tasks/:id", taskController.deleteTask);
+tasksRouter.put("/tasks/order", taskController.updateTaskOrder);

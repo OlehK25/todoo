@@ -13,7 +13,7 @@ class TasksController {
     try {
       allTasks = await AppDataSource.getRepository(Task).find({
         order: {
-          date: "ASC",
+          order: "ASC",
         },
       });
 
@@ -31,6 +31,14 @@ class TasksController {
       return res.status(400).json({ errors: errors.array() });
     }
 
+    let allTasks: Task[] = [];
+    allTasks = await AppDataSource.getRepository(Task).find({
+      order: {
+        order: "ASC",
+      },
+    });
+    allTasks = instanceToPlain(allTasks) as Task[];
+
     const newTask = new Task();
 
     newTask.title = req.body.title;
@@ -38,6 +46,7 @@ class TasksController {
     newTask.description = req.body.description;
     newTask.priority = req.body.priority;
     newTask.status = req.body.status;
+    newTask.order = allTasks.length + 1;
 
     // save the task to the database
     let createdTask: Task;
@@ -82,6 +91,7 @@ class TasksController {
         req.body.id,
         plainToInstance(Task, {
           status: req.body.status,
+          order: req.body.order,
         }),
       );
 
@@ -112,6 +122,18 @@ class TasksController {
       return res.status(204).send();
     } catch (error) {
       console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  public async updateTaskOrder(req: Request, res: Response): Promise<Response> {
+    const { id, order } = req.body;
+
+    try {
+      await AppDataSource.getRepository(Task).update(id, { order });
+      return res.status(200).send({ message: "Order updated successfully!" });
+    } catch (err) {
+      console.error(err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }

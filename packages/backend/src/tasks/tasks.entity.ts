@@ -36,4 +36,7 @@ export class Task {
     default: Status.todo,
   })
   status: Status;
+
+  @Column({ type: "int" })
+  order: number;
 }
