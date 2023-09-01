@@ -2,13 +2,16 @@ import express, { Express } from "express";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 import { AppDataSource } from "./data-source";
 import { tasksRouter } from "./tasks/tasks.router";
+import { usersRouter } from "./users/users.router";
 
 const app: Express = express();
 dotenv.config({ path: "../../.env" });
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(cors());
 
@@ -21,6 +24,7 @@ AppDataSource.initialize()
   });
 
 app.use("/", tasksRouter);
+app.use("/users", usersRouter);
 
 const port = process.env.PORT;
 

@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validationResult } from "express-validator";
+import { UpdateResult } from "typeorm";
 
 import { Task } from "./tasks.entity";
 import { AppDataSource } from "../data-source";
-import { UpdateResult } from "typeorm";
 
 class TasksController {
   public async getAllTasks(req: Request, res: Response): Promise<Response> {
@@ -13,7 +13,7 @@ class TasksController {
     try {
       allTasks = await AppDataSource.getRepository(Task).find({
         order: {
-          order: "ASC",
+          order: "DESC",
         },
       });
 
@@ -34,7 +34,7 @@ class TasksController {
     let allTasks: Task[] = [];
     allTasks = await AppDataSource.getRepository(Task).find({
       order: {
-        order: "ASC",
+        order: "DESC",
       },
     });
     allTasks = instanceToPlain(allTasks) as Task[];
