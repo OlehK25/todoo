@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { instanceToPlain, plainToInstance } from "class-transformer";
 import { validationResult } from "express-validator";
+import { UpdateResult } from "typeorm";
 
 import { Task } from "./tasks.entity";
 import { AppDataSource } from "../data-source";
-import { UpdateResult } from "typeorm";
 
 class TasksController {
   public async getAllTasks(req: Request, res: Response): Promise<Response> {
@@ -13,15 +13,15 @@ class TasksController {
     try {
       allTasks = await AppDataSource.getRepository(Task).find({
         order: {
-          order: "ASC",
+          order: "DESC",
         },
       });
 
       allTasks = instanceToPlain(allTasks) as Task[];
-      return res.json(allTasks).status(200);
+      return res.status(200).json(allTasks);
     } catch (_err) {
       console.error(_err);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 
@@ -34,7 +34,7 @@ class TasksController {
     let allTasks: Task[] = [];
     allTasks = await AppDataSource.getRepository(Task).find({
       order: {
-        order: "ASC",
+        order: "DESC",
       },
     });
     allTasks = instanceToPlain(allTasks) as Task[];
@@ -53,10 +53,10 @@ class TasksController {
     try {
       createdTask = await AppDataSource.getRepository(Task).save(newTask);
       createdTask = instanceToPlain(createdTask) as Task;
-      return res.json(createdTask).status(201);
+      return res.status(201).json(createdTask);
     } catch (error) {
       console.error(error);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 
@@ -75,13 +75,13 @@ class TasksController {
       });
     } catch (error) {
       console.error(error);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
 
     if (!task) {
       return res
-        .json({ error: "The task with given ID doesn't exist" })
-        .status(404);
+        .status(404)
+        .json({ error: "The task with given ID doesn't exist" });
     }
 
     let updatedTask: UpdateResult;
@@ -96,10 +96,10 @@ class TasksController {
       );
 
       updatedTask = instanceToPlain(updatedTask) as UpdateResult;
-      return res.json(updatedTask).status(200);
+      return res.status(200).json(updatedTask);
     } catch (err) {
       console.error(err);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 

@@ -6,8 +6,7 @@ import React, {
   useState,
 } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Alert, Box, Button, Grid, LinearProgress } from "@mui/material";
-import { format } from "date-fns";
+import { Alert, Button, Grid, LinearProgress } from "@mui/material";
 import toast from "react-hot-toast";
 import {
   DragDropContext,
@@ -15,6 +14,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
+import PropTypes from "prop-types";
 
 import { TaskCounter } from "../taskCounter/TaskCounter";
 import { Task } from "../task/Task";
@@ -24,8 +24,13 @@ import { Status } from "../CreateTaskForm/enums/status";
 import { IUpdateTask } from "../CreateTaskForm/interfaces/IUpdateTask";
 import { countTasks } from "./helpers/countTasks";
 import { TaskStatusChangedContext } from "../../context";
+import { Header } from "./Header";
+import { ITaskArea } from "./interfaces/ITaskArea";
 
-export const TaskArea: FC = (): ReactElement => {
+export const TaskArea: FC<ITaskArea> = ({
+  isClicked = false,
+  setIsClicked = () => console.log(),
+}): ReactElement => {
   const taskUpdatedContext = useContext(TaskStatusChangedContext);
   const [selectedStatus, setSelectedStatus] = useState<Status | string>("ALL");
   const [noCount, setNoCount] = useState(false);
@@ -154,9 +159,7 @@ export const TaskArea: FC = (): ReactElement => {
 
   return (
     <Grid item md={8} px={4}>
-      <Box mb={8} px={4}>
-        <h2>Status Of Your Tasks As On {format(new Date(), "PPPP")}</h2>
-      </Box>
+      <Header isClicked={isClicked} setIsClicked={setIsClicked} />
 
       <Grid container display="flex" justifyContent="center">
         <Grid
@@ -216,7 +219,7 @@ export const TaskArea: FC = (): ReactElement => {
               </Alert>
             )}
 
-            {noCount && (
+            {!error && data?.length !== 0 && noCount && (
               <Alert severity="warning">
                 You don`t have any tasks with the selected status yet. Create
                 one now.
@@ -268,4 +271,9 @@ export const TaskArea: FC = (): ReactElement => {
       </Grid>
     </Grid>
   );
+};
+
+TaskArea.propTypes = {
+  isClicked: PropTypes.bool,
+  setIsClicked: PropTypes.func,
 };
