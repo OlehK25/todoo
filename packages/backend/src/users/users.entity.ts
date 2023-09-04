@@ -38,11 +38,6 @@ export class User {
   })
   role: Role.user | Role.admin;
 
-  @Column({
-    default: false,
-  })
-  verified: boolean;
-
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 12);

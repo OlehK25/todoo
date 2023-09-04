@@ -1,15 +1,13 @@
-import React, { FC, ReactElement } from 'react';
-import { Avatar, Box, Typography } from '@mui/material';
-import PropTypes from 'prop-types';
+import React, { FC, ReactElement } from "react";
+import { Avatar, Box, Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
 interface IProfile {
-  name: string;
+  name?: string | null;
 }
 
-export const Profile: FC<IProfile> = (
-  props,
-): ReactElement => {
-  const { name = 'John' } = props;
+export const Profile: FC<IProfile> = (props): ReactElement => {
+  const { name = "Guest" } = props;
   return (
     <Box
       display="flex"
@@ -19,14 +17,14 @@ export const Profile: FC<IProfile> = (
     >
       <Avatar
         sx={{
-          width: '96px',
-          height: '96px',
-          backgroundColor: 'primary.main',
-          marginBottom: '16px',
+          width: "96px",
+          height: "96px",
+          backgroundColor: "primary.main",
+          marginBottom: "16px",
         }}
       >
         <Typography variant="h4" color="text.primary">
-          {`${name.substring(0, 1)}`}
+          {`${name?.substring(0, 1)}`}
         </Typography>
       </Avatar>
 
@@ -42,5 +40,5 @@ export const Profile: FC<IProfile> = (
 };
 
 Profile.propTypes = {
-  name: PropTypes.string.isRequired,
+  name: PropTypes.string || null,
 };

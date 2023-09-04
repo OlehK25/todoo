@@ -1,19 +1,24 @@
-import React, { FC, ReactElement } from "react";
-import { Box, Chip, Typography } from "@mui/material";
+import React, { FC, ReactElement, useState } from "react";
+import { Box, Chip, IconButton, Typography } from "@mui/material";
 import { format } from "date-fns";
 import PropTypes from "prop-types";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { ITaskHeader } from "./interfaces/ITaskHeader";
-import { ModalDeleteWindow } from "../modal/ModalDelete";
+import { ReusableModal } from "../modals/ReusableModal";
 
 export const TaskHeader: FC<ITaskHeader> = (props): ReactElement => {
   const {
-    id,
     title = "This is a test title",
     date = new Date(),
     showCloseIcon = false,
-    onDelete = (e) => console.log(e),
+    handleDelete = () => console.log(),
   } = props;
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   return (
     <Box display="flex" width="100%" justifyContent="space-between" mb={3}>
@@ -25,7 +30,21 @@ export const TaskHeader: FC<ITaskHeader> = (props): ReactElement => {
           <Chip variant="outlined" label={`${format(date, "PPP")}`} />
         </Box>
       )}
-      {showCloseIcon && <ModalDeleteWindow id={id} onDelete={onDelete} />}
+      {showCloseIcon && (
+        <>
+          <IconButton size="small" color="secondary" onClick={handleOpen}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+          <ReusableModal
+            open={open}
+            handleClose={handleClose}
+            title="Delete Task?"
+            description="Are you sure you want to delete this task?"
+            onConfirm={(e) => handleDelete(e, props.id)}
+            confirmButtonIcon={<DeleteIcon />}
+          />
+        </>
+      )}
     </Box>
   );
 };
@@ -35,5 +54,4 @@ TaskHeader.propTypes = {
   title: PropTypes.string,
   date: PropTypes.instanceOf(Date),
   showCloseIcon: PropTypes.bool,
-  onDelete: PropTypes.func,
 };

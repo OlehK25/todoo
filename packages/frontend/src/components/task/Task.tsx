@@ -20,7 +20,7 @@ export const Task: FC<ITask> = (props): ReactElement => {
     status = Status.completed,
     onStatusChange = (e) => console.log(e),
     onClick = (e) => console.log(e),
-    onDelete = (e) => console.log(e),
+    handleDelete = () => console.log(),
   } = props;
 
   const [isHovered, setIsHovered] = useState(false);
@@ -52,7 +52,7 @@ export const Task: FC<ITask> = (props): ReactElement => {
         title={title}
         date={date}
         showCloseIcon={isHovered}
-        onDelete={onDelete}
+        handleDelete={handleDelete}
       />
       <TaskDescription description={description} />
       <TaskFooter
@@ -72,5 +72,5 @@ Task.propTypes = {
   onStatusChange: PropTypes.func,
   onClick: PropTypes.func,
   priority: PropTypes.oneOf([Priority.low, Priority.normal, Priority.high]),
-  onDelete: PropTypes.func,
+  handleDelete: PropTypes.func,
 };

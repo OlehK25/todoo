@@ -30,6 +30,7 @@ import { ITaskArea } from "./interfaces/ITaskArea";
 export const TaskArea: FC<ITaskArea> = ({
   isClicked = false,
   setIsClicked = () => console.log(),
+  isAuthenticated = false,
 }): ReactElement => {
   const taskUpdatedContext = useContext(TaskStatusChangedContext);
   const [selectedStatus, setSelectedStatus] = useState<Status | string>("ALL");
@@ -159,7 +160,11 @@ export const TaskArea: FC<ITaskArea> = ({
 
   return (
     <Grid item md={8} px={4}>
-      <Header isClicked={isClicked} setIsClicked={setIsClicked} />
+      <Header
+        isAuthenticated={isAuthenticated}
+        isClicked={isClicked}
+        setIsClicked={setIsClicked}
+      />
 
       <Grid container display="flex" justifyContent="center">
         <Grid
@@ -254,7 +259,7 @@ export const TaskArea: FC<ITaskArea> = ({
                                 status={task.status}
                                 onStatusChange={handleStatusChange}
                                 onClick={handlerMarkComplete}
-                                onDelete={handlerDeleteTask}
+                                handleDelete={handlerDeleteTask}
                               />
                             </div>
                           )}
@@ -274,6 +279,7 @@ export const TaskArea: FC<ITaskArea> = ({
 };
 
 TaskArea.propTypes = {
+  isAuthenticated: PropTypes.bool,
   isClicked: PropTypes.bool,
   setIsClicked: PropTypes.func,
 };

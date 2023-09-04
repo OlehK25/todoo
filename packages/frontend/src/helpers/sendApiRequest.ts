@@ -36,7 +36,7 @@ export async function sendApiRequest<T>(
   const response = await fetch(url, returnCorrectRequest(method, data));
 
   if (!response.ok) {
-    throw new Error(`An error has occured: ${response.status}`);
+    throw new Error(`An error has occurred: ${response.status}`);
   }
 
   if (method === "DELETE") {
