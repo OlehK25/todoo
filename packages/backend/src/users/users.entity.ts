@@ -14,6 +14,11 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column({
+    length: 30,
+  })
+  name: string;
+
   @CreateDateColumn()
   created_at: Date;
 

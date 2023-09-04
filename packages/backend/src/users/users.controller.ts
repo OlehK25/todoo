@@ -1,140 +1,76 @@
 import { Request, Response } from "express";
-import { validationResult } from "express-validator";
-import { plainToInstance } from "class-transformer";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 
 import { AppDataSource } from "../data-source";
 import { User } from "./users.entity";
 
-dotenv.config({ path: "../../.env" });
-
-const signToken = (id: string) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+const filterObj = <T>(
+  obj: Record<string, T>,
+  ...allowedFields: string[]
+): Record<string, T> => {
+  const newObj: Record<string, T> = {};
+  Object.keys(obj).forEach((key) => {
+    if (allowedFields.includes(key)) {
+      newObj[key] = obj[key];
+    }
   });
+  return newObj;
 };
 
 class UsersController {
-  constructor() {
-    this.login = this.login.bind(this);
-    this.signup = this.signup.bind(this);
-    this.createSendToken = this.createSendToken.bind(this);
-  }
-
-  public createSendToken = async (
-    user: User,
-    statusCode: number,
-    req: Request,
-    res: Response,
-  ) => {
-    const token = signToken(user.id);
-
-    res.cookie("jwt", token, {
-      expires: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      secure: req.secure || req.headers["x-forwarded-proto"] === "https",
-    });
-
-    res.status(statusCode).json({
-      status: "success",
-      token,
-      data: { user },
-    });
-  };
+  constructor() {}
 
   public async getAllUsers(req: Request, res: Response): Promise<Response> {
     try {
       const users = await AppDataSource.getRepository(User).find();
       const usersJSON = users.map((user) => user.toJSON());
-      return res.json(usersJSON).status(200);
+      return res.status(200).json(usersJSON);
     } catch (error) {
       console.error(error);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   }
 
-  public login = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response | void> => {
-    const { email, password } = req.body;
-
+  public async getUser(req: Request, res: Response): Promise<Response> {
     try {
       const user = await AppDataSource.getRepository(User).findOne({
-        where: {
-          email,
-        },
+        where: { id: req.params.id },
       });
-
-      if (!user) {
-        return res
-          .json({
-            error:
-              "Invalid Credentials. While there isn`t user with the specified email address",
-          })
-          .status(400);
-      }
-
-      const isMatch = await User.comparePasswords(password, user.password);
-      if (!isMatch) {
-        return res
-          .json({ error: "Invalid Credentials (wrong password)" })
-          .status(400);
-      }
-
-      await this.createSendToken(user, 200, req, res);
+      const userJSON = user?.toJSON();
+      return res.status(200).json(userJSON);
     } catch (error) {
       console.error(error);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
+
+  public getMe(req: Request, res: Response) {
+    return res.status(200).json({ user: req.body.user });
+  }
+
+  public deleteMe = async (req: Request, res: Response): Promise<Response> => {
+    try {
+      await AppDataSource.getRepository(User).delete(req.body.user.id);
+      return res.status(204).json({ status: "success" });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   };
 
-  public signup = async (
-    req: Request,
-    res: Response,
-  ): Promise<Response | void> => {
-    const { email, password, passwordConfirm, name } = req.body;
-
-    if (!email || !password || !name || !passwordConfirm) {
-      return res.json({ error: "All fields are required!" }).status(400);
-    }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.json({ error: errors.array() }).status(400);
-    }
-
-    if (password !== passwordConfirm) {
-      return res.status(400).json({ error: "Passwords don`t match" });
-    }
-
+  public updateMe = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const existingUser = await AppDataSource.getRepository(User).findOne({
-        where: {
-          email,
-        },
-      });
+      const filteredBody = filterObj(req.body, "name", "email");
 
-      if (existingUser) {
-        return res
-          .json({ error: "User already exists with this email address" })
-          .status(400);
-      }
-
-      const newUser = plainToInstance(User, {
-        email,
-        password,
-        name,
-        verified: false,
-      });
-
-      const createdUser = await AppDataSource.getRepository(User).save(newUser);
-
-      await this.createSendToken(createdUser, 201, req, res);
+      const updatedUser = await AppDataSource.getRepository(User).update(
+        req.body.user?.id,
+        filteredBody,
+      );
+      return res
+        .status(200)
+        .json({ status: "success", data: { user: updatedUser } });
     } catch (error) {
       console.error(error);
-      return res.json({ error: "Internal Server Error" }).status(500);
+      return res.status(500).json({ error: "Internal Server Error" });
     }
   };
 }
