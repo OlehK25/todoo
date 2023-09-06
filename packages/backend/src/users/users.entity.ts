@@ -4,10 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from "typeorm";
-import { Role } from "../enums/Role";
 import * as bcrypt from "bcryptjs";
+
+import { Role } from "../enums/Role";
+import { Task } from "../tasks/tasks.entity";
 
 @Entity("users")
 export class User {
@@ -38,6 +41,11 @@ export class User {
   })
   role: Role.user | Role.admin;
 
+  @OneToMany(() => Task, (task) => task.user, {
+    cascade: true,
+  })
+  tasks: Task[];
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 12);
@@ -54,6 +62,7 @@ export class User {
     return {
       ...this,
       password: undefined,
+      // tasks: this.tasks ? this.tasks.map((task) => task) : undefined,
     };
   }
 }

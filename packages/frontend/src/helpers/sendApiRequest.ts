@@ -1,31 +1,20 @@
-type Method = "GET" | "POST" | "PUT" | "DELETE";
+export type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 function returnCorrectRequest(method: Method, data: unknown): RequestInit {
-  if (method === "GET") {
-    return {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-  }
-
-  if (method === "DELETE") {
-    return {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-  }
-
-  return {
+  const token = localStorage.getItem("token");
+  const request: RequestInit = {
     method,
-    body: JSON.stringify(data),
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   };
+
+  if (method !== "GET" && method !== "DELETE") {
+    request.body = JSON.stringify(data);
+  }
+
+  return request;
 }
 
 export async function sendApiRequest<T>(

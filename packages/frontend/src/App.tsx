@@ -34,14 +34,14 @@ const App: FC = (): ReactElement => {
         containerStyle={{ margin: "8px" }}
         toastOptions={{
           success: {
-            duration: 1000,
+            duration: 2000,
             style: {
               backgroundColor: "#96B6C5",
               color: "black",
             },
           },
           error: {
-            duration: 2000,
+            duration: 4000,
             style: {
               background: "#FF6969",
               color: "black",

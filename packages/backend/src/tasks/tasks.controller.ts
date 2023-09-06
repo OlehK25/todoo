@@ -5,20 +5,23 @@ import { UpdateResult } from "typeorm";
 
 import { Task } from "./tasks.entity";
 import { AppDataSource } from "../data-source";
+import { User } from "../users/users.entity";
 
 class TasksController {
   public async getAllTasks(req: Request, res: Response): Promise<Response> {
-    let allTasks: Task[] = [];
-
     try {
-      allTasks = await AppDataSource.getRepository(Task).find({
+      if (!req.body.user?.id) {
+        return res.status(403).json({ error: "User not authenticated" });
+      }
+
+      const tasks = await AppDataSource.getRepository(Task).find({
+        where: { user: { id: req.body.user?.id } },
         order: {
           order: "DESC",
         },
       });
 
-      allTasks = instanceToPlain(allTasks) as Task[];
-      return res.status(200).json(allTasks);
+      return res.status(200).json(tasks);
     } catch (_err) {
       console.error(_err);
       return res.status(500).json({ error: "Internal Server Error" });
@@ -48,11 +51,20 @@ class TasksController {
     newTask.status = req.body.status;
     newTask.order = allTasks.length + 1;
 
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { id: req.body.user?.id },
+    });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    newTask.user = user;
+
     // save the task to the database
     let createdTask: Task;
     try {
       createdTask = await AppDataSource.getRepository(Task).save(newTask);
       createdTask = instanceToPlain(createdTask) as Task;
+      createdTask.user = { id: createdTask.user.id };
       return res.status(201).json(createdTask);
     } catch (error) {
       console.error(error);

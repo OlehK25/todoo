@@ -1,6 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+
 import { Priority } from "../enums/Priority";
 import { Status } from "../enums/Status";
+import { User } from "../users/users.entity";
 
 @Entity()
 export class Task {
@@ -39,4 +41,7 @@ export class Task {
 
   @Column({ type: "int" })
   order: number;
+
+  @ManyToOne(() => User, (user) => user.tasks)
+  user: { id: string };
 }

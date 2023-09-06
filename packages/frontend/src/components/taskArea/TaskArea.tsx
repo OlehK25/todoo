@@ -35,10 +35,14 @@ export const TaskArea: FC<ITaskArea> = ({
   const taskUpdatedContext = useContext(TaskStatusChangedContext);
   const [selectedStatus, setSelectedStatus] = useState<Status | string>("ALL");
   const [noCount, setNoCount] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
-  const { error, isLoading, data, refetch } = useQuery(["tasks"], async () =>
-    sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET"),
-  );
+  const { error, isLoading, data, refetch } = useQuery(["tasks"], async () => {
+    if (!isAuthenticated) {
+      return [];
+    }
+    return sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET");
+  });
 
   const [tasks, setTasks] = useState(data);
 
@@ -62,7 +66,7 @@ export const TaskArea: FC<ITaskArea> = ({
 
   useEffect(() => {
     refetch();
-  }, [taskUpdatedContext.updated]);
+  }, [taskUpdatedContext.updated, isAuthenticated]);
 
   useEffect(() => {
     if (updateTaskMutation.isSuccess) {
@@ -161,6 +165,8 @@ export const TaskArea: FC<ITaskArea> = ({
   return (
     <Grid item md={8} px={4}>
       <Header
+        loginModalOpen={loginModalOpen}
+        setLoginModalOpen={setLoginModalOpen}
         isAuthenticated={isAuthenticated}
         isClicked={isClicked}
         setIsClicked={setIsClicked}
@@ -212,19 +218,42 @@ export const TaskArea: FC<ITaskArea> = ({
 
         <Grid item display="flex" flexDirection="column" md={8} xs={10}>
           <>
+            {!isAuthenticated && (
+              <>
+                <Alert severity="info">
+                  Please log in to view and manage your tasks.
+                </Alert>
+                <Button
+                  sx={{
+                    width: "100px",
+                    alignSelf: "center",
+                    marginTop: "20px",
+                  }}
+                  variant="contained"
+                  color="primary"
+                  onClick={() => setLoginModalOpen(true)}
+                >
+                  Login
+                </Button>
+              </>
+            )}
+
             {error && (
               <Alert severity="error">
                 There was an error fetching your tasks. Please try again later.
               </Alert>
             )}
 
-            {!error && Array.isArray(data) && data.length === 0 && (
-              <Alert severity="warning">
-                You don`t have any tasks yet. Create one now.
-              </Alert>
-            )}
+            {isAuthenticated &&
+              !error &&
+              Array.isArray(data) &&
+              data.length === 0 && (
+                <Alert severity="warning">
+                  You don`t have any tasks yet. Create one now.
+                </Alert>
+              )}
 
-            {!error && data?.length !== 0 && noCount && (
+            {isAuthenticated && !error && data?.length !== 0 && noCount && (
               <Alert severity="warning">
                 You don`t have any tasks with the selected status yet. Create
                 one now.

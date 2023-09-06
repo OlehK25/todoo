@@ -23,8 +23,8 @@ AppDataSource.initialize()
     console.error("Error during Data Source initialization:", err);
   });
 
-app.use("/", tasksRouter);
 app.use("/users", usersRouter);
+app.use("/", tasksRouter);
 
 const port = process.env.PORT;
 

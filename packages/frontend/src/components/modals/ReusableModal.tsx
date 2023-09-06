@@ -3,10 +3,9 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { Button, Stack } from "@mui/material";
-
+import PropTypes from "prop-types";
 import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
 
-import PropTypes from "prop-types";
 import { IReusableModal } from "./interfaces/IReusableModal";
 
 export const style = {

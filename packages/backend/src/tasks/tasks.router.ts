@@ -1,8 +1,11 @@
 import { Router } from "express";
 import { taskController } from "./tasks.controller";
 import { createValidator, updateValidator } from "./tasks.validator";
+import { authMiddleware } from "../middleware/auth";
 
 export const tasksRouter: Router = Router();
+
+tasksRouter.use(authMiddleware);
 
 tasksRouter.get("/tasks", taskController.getAllTasks);
 tasksRouter.post("/tasks", createValidator, taskController.createTask);

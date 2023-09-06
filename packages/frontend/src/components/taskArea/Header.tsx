@@ -14,21 +14,24 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { LogoutOutlined } from "@mui/icons-material";
+import toast from "react-hot-toast";
 
 import { ITaskArea } from "./interfaces/ITaskArea";
 import { UserContext } from "../../context";
 import { LoginModal } from "../modals/ModalLogin";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { ReusableModal } from "../modals/ReusableModal";
+import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 
 export const Header: FC<ITaskArea> = ({
+  loginModalOpen = false,
+  setLoginModalOpen = () => console.log(),
   isClicked = false,
   setIsClicked = () => console.log(),
   isAuthenticated = false,
 }): ReactElement => {
   const { setUser } = useContext(UserContext);
 
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -48,22 +51,22 @@ export const Header: FC<ITaskArea> = ({
     setIsLoading(true);
 
     try {
-      const response = await sendApiRequest<{
-        status: string;
-        token: string;
-        data: { user: never };
-      }>("http://localhost:3500/users/login", "POST", { email, password });
+      const response = await sendApiRequest<IApiResponse>(
+        "http://localhost:3500/users/login",
+        "POST",
+        { email, password },
+      );
 
       if (response && response.status === "success") {
+        toast.success("Logged in successfully");
         setUser(response.data.user);
-        console.log("Logged in successfully");
         localStorage.setItem("token", response.token);
-      } else {
-        console.error("Error logging in: ");
+      } else if (response && response.error) {
+        toast.error(response.error);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(error || "An unexpected error occurred");
+      toast.error(`Error logging in: ${error}`);
     }
 
     setIsLoading(false);
@@ -72,8 +75,8 @@ export const Header: FC<ITaskArea> = ({
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem("token");
-    handleClose();
-    console.log("Logged out successfully");
+    setLogoutModalOpen(false);
+    toast.success("Logged out successfully");
   };
 
   return (

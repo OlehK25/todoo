@@ -1,11 +1,13 @@
 import * as React from "react";
 import { useState, FC, ReactElement } from "react";
 import { Modal, Box, Typography, TextField, Button } from "@mui/material";
+import toast from "react-hot-toast";
 
 import { style } from "./ReusableModal";
 import { SignupModal } from "./ModalSignup";
 import { IModalLogin } from "./interfaces/IModalLogin";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
+import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 
 export const LoginModal: FC<IModalLogin> = ({
   isLoading,
@@ -27,26 +29,26 @@ export const LoginModal: FC<IModalLogin> = ({
     setIsLoading(true);
 
     try {
-      const response = await sendApiRequest<{
-        status: string;
-        data: { user: never };
-      }>("http://localhost:3500/users/signup", "POST", {
-        email,
-        password,
-        passwordConfirm,
-        name: username,
-      });
+      const response = await sendApiRequest<IApiResponse>(
+        "http://localhost:3500/users/signup",
+        "POST",
+        {
+          email,
+          password,
+          passwordConfirm,
+          name: username,
+        },
+      );
 
       if (response && response.status === "success") {
-        console.log("Registered successfully");
-        // For auto-login:
+        toast.success("Registered successfully");
         handleLogin(email, password);
-      } else {
-        console.error("Error signing up");
+      } else if (response && response.error) {
+        toast.error(response.error);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert(error || "An unexpected error occurred during sign-up");
+      toast.error(`Error signing up: ${error}`);
     }
 
     setIsLoading(false);

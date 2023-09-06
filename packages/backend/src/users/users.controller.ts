@@ -73,6 +73,23 @@ class UsersController {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   };
+
+  public async getUserWithTasks(
+    req: Request,
+    res: Response,
+  ): Promise<Response> {
+    try {
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { id: req.body.user?.id },
+        relations: ["tasks"],
+      });
+      const userJSON = user?.toJSON();
+      return res.status(200).json({ userJSON });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
 }
 
 export const userController = new UsersController();
