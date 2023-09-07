@@ -60,15 +60,13 @@ export const Header: FC<IHeader> = ({
       );
 
       if (response && response.status === "success") {
-        toast.success("Logged in successfully");
+        setLoginModalOpen(false);
+        toast.success("Authentication is successful!");
         setUser(response.data.user);
         localStorage.setItem("token", response.token);
-      } else if (response && response.error) {
-        toast.error(response.error);
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(`Error logging in: ${error}`);
+      toast.error(`${error}`);
     }
 
     setIsLoading(false);
@@ -102,7 +100,7 @@ export const Header: FC<IHeader> = ({
             mx: "5px",
           }}
           onClick={() => {
-            if (isClickedAccount) setIsClickedAccount(false);
+            if (isClickedAccount) setIsClickedAccount(!isClickedAccount);
             setIsClicked(!isClicked);
           }}
         >
@@ -135,8 +133,8 @@ export const Header: FC<IHeader> = ({
             onClick={() => {
               if (!isAuthenticated) setLoginModalOpen(true);
               else {
-                if (isClicked) setIsClicked(false);
-                setIsClickedAccount(true);
+                if (isClicked) setIsClicked(!isClicked);
+                setIsClickedAccount(!isClickedAccount);
               }
             }}
           >

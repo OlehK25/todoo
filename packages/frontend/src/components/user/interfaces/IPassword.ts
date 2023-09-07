@@ -1,6 +1,10 @@
 import { ChangeEvent } from "react";
 
-export interface IUpdatePassword {
+export interface IPassword {
+  error?: boolean;
+  helperText?: string | null;
+  onBlur?: () => void;
+  size?: "small" | "medium";
   label?: string;
   id?: string;
   value?: string;

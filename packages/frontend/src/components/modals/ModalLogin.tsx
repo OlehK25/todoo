@@ -8,6 +8,7 @@ import { SignupModal } from "./ModalSignup";
 import { IModalLogin } from "./interfaces/IModalLogin";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
+import { PasswordInput } from "../user/_userPassword";
 
 export const LoginModal: FC<IModalLogin> = ({
   loginModalOpen,
@@ -43,14 +44,10 @@ export const LoginModal: FC<IModalLogin> = ({
       );
 
       if (response && response.status === "success") {
-        toast.success("Registered successfully");
         handleLogin(email, password);
-      } else if (response && response.error) {
-        toast.error(response.error);
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(`Error signing up: ${error}`);
+      toast.error(`${error}`);
     }
 
     setIsLoading(false);
@@ -58,7 +55,6 @@ export const LoginModal: FC<IModalLogin> = ({
 
   const submitHandler = () => {
     handleLogin(email, password);
-    handleClose();
   };
 
   return (
@@ -94,16 +90,16 @@ export const LoginModal: FC<IModalLogin> = ({
             margin="normal"
             disabled={isLoading}
           />
-          <TextField
-            label="Password"
-            variant="outlined"
-            fullWidth
-            type="password"
+
+          <PasswordInput
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
             disabled={isLoading}
+            label="Password"
+            size="medium"
           />
+
           <Button
             variant="contained"
             color="primary"
@@ -131,7 +127,6 @@ export const LoginModal: FC<IModalLogin> = ({
           isLoading={isLoading}
           open={signUpModalOpen}
           handleClose={() => {
-            // handleClose();
             setSignUpModalOpen(false);
           }}
           handleSignUp={handleSignUp}

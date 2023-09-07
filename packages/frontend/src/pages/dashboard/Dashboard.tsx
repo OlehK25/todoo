@@ -44,7 +44,7 @@ export const Dashboard: FC = (): ReactElement => {
 
   return (
     <Grid
-      container={isClicked || isClickedAccount}
+      container={isClicked || (isAuthenticated && isClickedAccount)}
       minHeight="100vh"
       p={0}
       m={0}
@@ -60,7 +60,7 @@ export const Dashboard: FC = (): ReactElement => {
         <Sidebar isAuthenticated={isAuthenticated} />
       )}
 
-      {isClickedAccount && (
+      {isClickedAccount && isAuthenticated && (
         <Account
           setIsClickedAccount={() => setIsClickedAccount(!isClickedAccount)}
         />

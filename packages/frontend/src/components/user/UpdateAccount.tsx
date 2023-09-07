@@ -15,7 +15,7 @@ import { IUpdateAccount } from "./interfaces/IUpdateAccount";
 import { UserContext } from "../../context";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
-import { UpdatePassword } from "./_userUpdatePassword";
+import { PasswordInput } from "./_userPassword";
 import { DeleteAccount } from "./DeleteAccount";
 
 export const UpdateAccount: FC<IUpdateAccount> = ({
@@ -62,12 +62,9 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
         setPassword("");
         setPasswordConfirm("");
         setCurrentPassword("");
-      } else if (response && response.error) {
-        toast.error(response.error);
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(`Error updating account: ${error}`);
+      toast.error(`${error}`);
     }
 
     setIsLoading(false);
@@ -82,19 +79,15 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
       px={4}
       my={6}
     >
-      <IconButton
-        sx={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          margin: "1rem",
-        }}
-        size="medium"
-        color="secondary"
-        onClick={() => setIsClickedAccount(false)}
-      >
-        <CloseIcon fontSize="medium" />
-      </IconButton>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+        <IconButton
+          size="medium"
+          color="secondary"
+          onClick={() => setIsClickedAccount(false)}
+        >
+          <CloseIcon fontSize="medium" />
+        </IconButton>
+      </Box>
 
       <Typography mb={2} component="h2" variant="h6">
         Update your account name
@@ -155,7 +148,7 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
         }}
         spacing={2}
       >
-        <UpdatePassword
+        <PasswordInput
           id="currentPassword"
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
@@ -163,14 +156,14 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
           label="Current Password"
         />
 
-        <UpdatePassword
+        <PasswordInput
           id="newPassword"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           disabled={isLoading}
           label="Password"
         />
-        <UpdatePassword
+        <PasswordInput
           id="passwordConfirm"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}

@@ -8,12 +8,7 @@ import React, {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Alert, Button, Grid, LinearProgress } from "@mui/material";
 import toast from "react-hot-toast";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult,
-} from "react-beautiful-dnd";
+import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
 import PropTypes from "prop-types";
 
 import { TaskCounter } from "../taskCounter/TaskCounter";
@@ -26,6 +21,7 @@ import { countTasks } from "./helpers/countTasks";
 import { TaskStatusChangedContext } from "../../context";
 import { Header } from "./Header";
 import { ITaskArea } from "./interfaces/ITaskArea";
+import { StrictModeDroppable } from "../task/Droppable";
 
 export const TaskArea: FC<ITaskArea> = ({
   isClickedAccount = false,
@@ -78,7 +74,7 @@ export const TaskArea: FC<ITaskArea> = ({
       toast.success(`Task deleted successfully!!!`);
       taskUpdatedContext.toggle();
     } else if (deleteTaskMutation.isError) {
-      toast.error(`Error deleting Task. Please try again later. ${error}`);
+      toast.error(`${error}`);
     }
   }, [updateTaskMutation.isSuccess, deleteTaskMutation.isSuccess]);
 
@@ -265,11 +261,11 @@ export const TaskArea: FC<ITaskArea> = ({
             )}
 
             <DragDropContext onDragEnd={handleOnDragEnd}>
-              <Droppable droppableId="tasks">
+              <StrictModeDroppable droppableId="tasks">
                 {(provided) => (
                   <div {...provided.droppableProps} ref={provided.innerRef}>
                     {isLoading ? (
-                      <LinearProgress />
+                      <LinearProgress sx={{ margin: "50px" }} />
                     ) : (
                       filteredTasks.map((task, index) => (
                         <Draggable
@@ -302,7 +298,7 @@ export const TaskArea: FC<ITaskArea> = ({
                     {provided.placeholder}
                   </div>
                 )}
-              </Droppable>
+              </StrictModeDroppable>
             </DragDropContext>
           </>
         </Grid>

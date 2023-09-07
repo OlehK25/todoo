@@ -1,13 +1,13 @@
 import * as React from "react";
 import { FC, ReactElement, useContext, useState } from "react";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import toast from "react-hot-toast";
 
 import { IDeleteAccount } from "./interfaces/IDeleteAccount";
 import { ReusableModal } from "../modals/ReusableModal";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
-import toast from "react-hot-toast";
 import { UserContext } from "../../context";
 
 export const DeleteAccount: FC<IDeleteAccount> = ({
@@ -33,8 +33,7 @@ export const DeleteAccount: FC<IDeleteAccount> = ({
         setUser(null);
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error(`Error deleting account: ${error}`);
+      toast.error(`${error}`);
     } finally {
       setIsClickedAccount(false);
       setDeleteModalOpen(false);
@@ -43,7 +42,7 @@ export const DeleteAccount: FC<IDeleteAccount> = ({
   };
 
   return (
-    <>
+    <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
       <Button
         variant="outlined"
         color="error"
@@ -64,6 +63,6 @@ export const DeleteAccount: FC<IDeleteAccount> = ({
           confirmButtonText="Delete"
         />
       )}
-    </>
+    </Box>
   );
 };

@@ -12,7 +12,7 @@ export const style = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  gap: "0.5rem",
+  gap: "1rem",
   position: "absolute",
   top: "50%",
   left: "50%",

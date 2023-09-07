@@ -3,6 +3,7 @@ import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 
 import { style } from "./ReusableModal";
 import { IModalSignup } from "./interfaces/IModalSignup";
+import { PasswordInput } from "../user/_userPassword";
 
 export const SignupModal: FC<IModalSignup> = ({
   loginModalOpen = false,
@@ -16,12 +17,13 @@ export const SignupModal: FC<IModalSignup> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+
   const [errors, setErrors] = useState<
     Partial<{
-      username: string;
-      email: string;
-      password: string;
-      passwordConfirm: string;
+      username: string | null;
+      email: string | null;
+      password: string | null;
+      passwordConfirm: string | null;
     }>
   >({});
 
@@ -30,27 +32,39 @@ export const SignupModal: FC<IModalSignup> = ({
     return re.test(email);
   };
 
-  const submitHandler = () => {
-    let newErrors = {};
+  const validateField = (field: string, value: string) => {
+    switch (field) {
+      case "username":
+        return value ? null : "Username is required";
+      case "email":
+        return validateEmail(value) ? null : "Invalid email format";
+      case "password":
+        return value.length >= 6
+          ? null
+          : "Password should be at least 6 characters";
+      case "passwordConfirm":
+        return password === value ? null : "Passwords don't match!";
+      default:
+        return null;
+    }
+  };
 
-    if (!username)
-      newErrors = { ...newErrors, username: "Username is required" };
-    if (!email) newErrors = { ...newErrors, email: "Email is required" };
-    if (!validateEmail(email))
-      newErrors = { ...newErrors, email: "Invalid email format" };
-    if (password.length < 6)
-      newErrors = {
-        ...newErrors,
-        password: "Password should be at least 6 characters",
-      };
-    if (!password)
-      newErrors = { ...newErrors, password: "Password is required" };
-    if (password !== passwordConfirm)
-      newErrors = { ...newErrors, confirmPassword: "Passwords don't match!" };
+  const handleFieldBlur = (field: string, value: string) => {
+    const fieldError = validateField(field, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [field]: fieldError }));
+  };
+
+  const submitHandler = () => {
+    const newErrors = {
+      username: validateField("username", username),
+      email: validateField("email", email),
+      password: validateField("password", password),
+      passwordConfirm: validateField("passwordConfirm", passwordConfirm),
+    };
 
     setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
+    if (Object.values(newErrors).every((error) => error === null)) {
       handleSignUp(email, password, passwordConfirm, username);
       handleClose();
     }
@@ -59,7 +73,9 @@ export const SignupModal: FC<IModalSignup> = ({
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={() => {
+        handleClose();
+      }}
       sx={{
         boxShadow: 24,
         backdropFilter: "blur(4px)",
@@ -80,10 +96,12 @@ export const SignupModal: FC<IModalSignup> = ({
           fullWidth
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onBlur={() => handleFieldBlur("username", username)}
           margin="normal"
           error={!!errors.username}
           helperText={errors.username}
           disabled={isLoading}
+          sx={{ margin: "2px 0px" }}
         />
         <TextField
           label="Email"
@@ -91,40 +109,43 @@ export const SignupModal: FC<IModalSignup> = ({
           fullWidth
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => handleFieldBlur("email", email)}
           margin="normal"
           error={!!errors.email}
           helperText={errors.email}
           disabled={isLoading}
+          sx={{ margin: "2px 0px" }}
         />
-        <TextField
-          label="Password"
-          variant="outlined"
-          fullWidth
-          type="password"
+        <PasswordInput
+          id="passwordM"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          margin="normal"
+          disabled={isLoading}
+          label="Password"
+          size="medium"
+          onBlur={() => handleFieldBlur("password", password)}
           error={!!errors.password}
           helperText={errors.password}
-          disabled={isLoading}
         />
-        <TextField
-          label="Confirm password"
-          variant="outlined"
-          fullWidth
-          type="password"
+        <PasswordInput
+          id="passwordConfirmM"
           value={passwordConfirm}
           onChange={(e) => setPasswordConfirm(e.target.value)}
-          margin="normal"
+          disabled={isLoading}
+          label="Password Confirm"
+          size="medium"
+          onBlur={() => handleFieldBlur("passwordConfirm", passwordConfirm)}
           error={!!errors.passwordConfirm}
           helperText={errors.passwordConfirm}
-          disabled={isLoading}
         />
+
         <Button
           variant="contained"
           color="primary"
           onClick={submitHandler}
-          disabled={isLoading || !email || !password || !username}
+          disabled={
+            isLoading || !email || !password || !passwordConfirm || !username
+          }
         >
           Register
         </Button>
