@@ -5,6 +5,8 @@ import { style } from "./ReusableModal";
 import { IModalSignup } from "./interfaces/IModalSignup";
 
 export const SignupModal: FC<IModalSignup> = ({
+  loginModalOpen = false,
+  setLoginModalOpen = () => console.log(),
   isLoading,
   open,
   handleClose,
@@ -65,10 +67,6 @@ export const SignupModal: FC<IModalSignup> = ({
     >
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "0.5rem",
           ...style,
           borderColor: "warning.dark",
         }}
@@ -126,9 +124,19 @@ export const SignupModal: FC<IModalSignup> = ({
           variant="contained"
           color="primary"
           onClick={submitHandler}
-          disabled={isLoading}
+          disabled={isLoading || !email || !password || !username}
         >
           Register
+        </Button>
+        <Button
+          color="secondary"
+          onClick={() => {
+            setLoginModalOpen(loginModalOpen);
+            handleClose();
+          }}
+          disabled={isLoading}
+        >
+          Already have an account? Login
         </Button>
       </Box>
     </Modal>

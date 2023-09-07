@@ -28,6 +28,8 @@ import { Header } from "./Header";
 import { ITaskArea } from "./interfaces/ITaskArea";
 
 export const TaskArea: FC<ITaskArea> = ({
+  isClickedAccount = false,
+  setIsClickedAccount = () => console.log(),
   isClicked = false,
   setIsClicked = () => console.log(),
   isAuthenticated = false,
@@ -165,6 +167,8 @@ export const TaskArea: FC<ITaskArea> = ({
   return (
     <Grid item md={8} px={4}>
       <Header
+        isClickedAccount={isClickedAccount}
+        setIsClickedAccount={setIsClickedAccount}
         loginModalOpen={loginModalOpen}
         setLoginModalOpen={setLoginModalOpen}
         isAuthenticated={isAuthenticated}
@@ -308,6 +312,8 @@ export const TaskArea: FC<ITaskArea> = ({
 };
 
 TaskArea.propTypes = {
+  isClickedAccount: PropTypes.bool,
+  setIsClickedAccount: PropTypes.func,
   isAuthenticated: PropTypes.bool,
   isClicked: PropTypes.bool,
   setIsClicked: PropTypes.func,

@@ -10,6 +10,8 @@ import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 
 export const LoginModal: FC<IModalLogin> = ({
+  loginModalOpen,
+  setLoginModalOpen,
   isLoading,
   setIsLoading,
   open,
@@ -74,10 +76,6 @@ export const LoginModal: FC<IModalLogin> = ({
       >
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "0.5rem",
             ...style,
             borderColor: "success.dark",
           }}
@@ -86,8 +84,10 @@ export const LoginModal: FC<IModalLogin> = ({
             Login
           </Typography>
           <TextField
+            id="email"
             label="Email"
             variant="outlined"
+            type="email"
             fullWidth
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -108,7 +108,7 @@ export const LoginModal: FC<IModalLogin> = ({
             variant="contained"
             color="primary"
             onClick={submitHandler}
-            disabled={isLoading}
+            disabled={isLoading || !email || !password}
           >
             Submit
           </Button>
@@ -126,10 +126,12 @@ export const LoginModal: FC<IModalLogin> = ({
 
       {signUpModalOpen && (
         <SignupModal
+          loginModalOpen={loginModalOpen}
+          setLoginModalOpen={setLoginModalOpen}
           isLoading={isLoading}
           open={signUpModalOpen}
           handleClose={() => {
-            handleClose();
+            // handleClose();
             setSignUpModalOpen(false);
           }}
           handleSignUp={handleSignUp}

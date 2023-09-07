@@ -16,14 +16,16 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { LogoutOutlined } from "@mui/icons-material";
 import toast from "react-hot-toast";
 
-import { ITaskArea } from "./interfaces/ITaskArea";
 import { UserContext } from "../../context";
 import { LoginModal } from "../modals/ModalLogin";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { ReusableModal } from "../modals/ReusableModal";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
+import { IHeader } from "./interfaces/IHeader";
 
-export const Header: FC<ITaskArea> = ({
+export const Header: FC<IHeader> = ({
+  isClickedAccount = false,
+  setIsClickedAccount = () => console.log(),
   loginModalOpen = false,
   setLoginModalOpen = () => console.log(),
   isClicked = false,
@@ -73,6 +75,8 @@ export const Header: FC<ITaskArea> = ({
   };
 
   const handleLogout = () => {
+    setIsClickedAccount(false);
+    if (isClicked) setIsClicked(false);
     setUser(null);
     localStorage.removeItem("token");
     setLogoutModalOpen(false);
@@ -97,7 +101,10 @@ export const Header: FC<ITaskArea> = ({
           sx={{
             mx: "5px",
           }}
-          onClick={setIsClicked}
+          onClick={() => {
+            if (isClickedAccount) setIsClickedAccount(false);
+            setIsClicked(!isClicked);
+          }}
         >
           {isClicked ? <RemoveIcon /> : <AddIcon />}
         </Fab>
@@ -127,6 +134,10 @@ export const Header: FC<ITaskArea> = ({
           <MenuItem
             onClick={() => {
               if (!isAuthenticated) setLoginModalOpen(true);
+              else {
+                if (isClicked) setIsClicked(false);
+                setIsClickedAccount(true);
+              }
             }}
           >
             <Avatar sx={{ mr: "10px" }} />
@@ -157,6 +168,8 @@ export const Header: FC<ITaskArea> = ({
 
         {loginModalOpen && (
           <LoginModal
+            loginModalOpen={loginModalOpen}
+            setLoginModalOpen={setLoginModalOpen}
             isLoading={isLoading}
             setIsLoading={setIsLoading}
             open={loginModalOpen}

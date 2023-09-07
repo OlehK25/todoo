@@ -12,14 +12,15 @@ import { Sidebar } from "../../components/sidebar/Sidebar";
 import { TaskArea } from "../../components/taskArea/TaskArea";
 import { UserContext } from "../../context";
 import { fetchUserDetails } from "../../components/authentication/api";
+import { Account } from "../../components/user/Account";
 
 export const Dashboard: FC = (): ReactElement => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const isAuthenticated = user !== null;
   const [isClicked, setIsClicked] = useState(false);
+  const [isClickedAccount, setIsClickedAccount] = useState(false);
 
   const token = localStorage.getItem("token");
-  const { setUser } = useContext(UserContext);
 
   const { isError } = useQuery(
     ["userDetails"],
@@ -42,13 +43,28 @@ export const Dashboard: FC = (): ReactElement => {
   }, [isError]);
 
   return (
-    <Grid container={isClicked} minHeight="100vh" p={0} m={0}>
+    <Grid
+      container={isClicked || isClickedAccount}
+      minHeight="100vh"
+      p={0}
+      m={0}
+    >
       <TaskArea
         isAuthenticated={isAuthenticated}
         isClicked={isClicked}
+        isClickedAccount={isClickedAccount}
+        setIsClickedAccount={() => setIsClickedAccount(!isClickedAccount)}
         setIsClicked={() => setIsClicked(!isClicked)}
       />
-      {isClicked && <Sidebar isAuthenticated={isAuthenticated} />}
+      {isClicked && !isClickedAccount && (
+        <Sidebar isAuthenticated={isAuthenticated} />
+      )}
+
+      {isClickedAccount && (
+        <Account
+          setIsClickedAccount={() => setIsClickedAccount(!isClickedAccount)}
+        />
+      )}
     </Grid>
   );
 };

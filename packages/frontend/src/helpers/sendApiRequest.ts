@@ -1,4 +1,4 @@
-export type Method = "GET" | "POST" | "PUT" | "DELETE";
+export type Method = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 function returnCorrectRequest(method: Method, data: unknown): RequestInit {
   const token = localStorage.getItem("token");
@@ -10,7 +10,7 @@ function returnCorrectRequest(method: Method, data: unknown): RequestInit {
     },
   };
 
-  if (method !== "GET" && method !== "DELETE") {
+  if (method !== "GET") {
     request.body = JSON.stringify(data);
   }
 
@@ -25,7 +25,12 @@ export async function sendApiRequest<T>(
   const response = await fetch(url, returnCorrectRequest(method, data));
 
   if (!response.ok) {
-    throw new Error(`An error has occurred: ${response.status}`);
+    throw new Error(
+      `An error has occurred: ${response.json().then((e) => {
+        console.log(e.error);
+        return e.error;
+      })}`,
+    );
   }
 
   if (method === "DELETE") {

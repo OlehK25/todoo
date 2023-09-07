@@ -1,4 +1,5 @@
 export const fetchUserDetails = async (token: string) => {
+  if (!token) return;
   const response = await fetch("http://localhost:3500/users/me", {
     headers: {
       Authorization: `Bearer ${token}`,

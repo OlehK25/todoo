@@ -9,6 +9,10 @@ import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlin
 import { IReusableModal } from "./interfaces/IReusableModal";
 
 export const style = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "0.5rem",
   position: "absolute",
   top: "50%",
   left: "50%",

@@ -1,7 +1,7 @@
 export interface ITaskArea {
-  loginModalOpen?: boolean;
-  setLoginModalOpen?: (i: boolean) => void;
-  setIsClicked?: () => void;
+  isClickedAccount?: boolean;
+  setIsClickedAccount?: (e: boolean) => void;
   isClicked?: boolean;
+  setIsClicked?: () => void;
   isAuthenticated?: boolean;
 }

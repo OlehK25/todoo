@@ -59,15 +59,54 @@ class UsersController {
 
   public updateMe = async (req: Request, res: Response): Promise<Response> => {
     try {
-      const filteredBody = filterObj(req.body, "name", "email");
+      if (
+        req.body.name &&
+        !req.body.password &&
+        !req.body.passwordConfirm &&
+        !req.body.currentPassword
+      ) {
+        const filteredBody = filterObj(req.body, "name");
 
-      const updatedUser = await AppDataSource.getRepository(User).update(
-        req.body.user?.id,
-        filteredBody,
-      );
-      return res
-        .status(200)
-        .json({ status: "success", data: { user: updatedUser } });
+        await AppDataSource.getRepository(User).update(
+          req.body.user?.id,
+          filteredBody,
+        );
+
+        return res.status(200).json({ status: "success" });
+      } else {
+        if (!req.body.currentPassword) {
+          return res.status(401).json({
+            error: "Please provide your current password.",
+          });
+        }
+
+        const user = await AppDataSource.getRepository(User).findOne({
+          where: { id: req.body.user?.id },
+        });
+
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        const isMatch = await User.comparePasswords(
+          req.body.currentPassword,
+          user.password,
+        );
+        if (!isMatch) {
+          return res
+            .status(403)
+            .json({ error: "Your current password is incorrect" });
+        }
+
+        if (req.body.password !== req.body.passwordConfirm) {
+          return res.status(402).json({ error: "Passwords don`t match" });
+        }
+        user.password = req.body.password;
+        await user.hashPassword();
+        await AppDataSource.getRepository(User).save(user);
+
+        return res.status(200).json({ status: "success" });
+      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: "Internal Server Error" });
