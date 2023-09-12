@@ -1,7 +1,7 @@
 # 📃 Todo List Web Application
 
 A basic project that allows you to manage and plan your day, saving all tasks in a convenient service.
- > Visit the live app [here]() `(I'm currently  working on this project)`
+ > Visit the live app [here]() `(SOON)`
 
 ## 🗒️ Implementation\Technology Stack
 
@@ -13,14 +13,14 @@ A basic project that allows you to manage and plan your day, saving all tasks in
  - NodeJS, Express;
  - TypeORM;
  - MySQL;
- - Docker Compose.
+ - Docker Compose;
+ - React-beautiful-dnd;
+ - JWT;
+ - Nodemailer & Brevo & Mailtrap.
 
 ## 🔜 Future Improvements and Issues
 
-No known issues are present as of now. Future improvements will be based on user feedback and developer insights. I want to implement the following: 
-- design change;
-- add the function of deleting tasks, the function of viewing all completed tasks, sorting and searching for tasks;
-- add calendar.
+No known issues are present as of now. Future improvements will be based on user feedback and developer insights.
  
 > Check the issues section on the GitHub page for updates.
 
