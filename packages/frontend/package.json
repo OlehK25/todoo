@@ -54,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@types/node": "^20.6.0",
     "@types/react-beautiful-dnd": "^13.1.4",
     "eslint": "^8.47.0",
     "eslint-import-resolver-typescript": "^3.6.0",

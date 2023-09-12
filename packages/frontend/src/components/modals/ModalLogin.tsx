@@ -9,10 +9,11 @@ import { IModalLogin } from "./interfaces/IModalLogin";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { PasswordInput } from "../user/_userPassword";
+import { ModalForgotPassword } from "./ModalForgotPassword";
 
 export const LoginModal: FC<IModalLogin> = ({
-  loginModalOpen,
-  setLoginModalOpen,
+  loginModalOpen = false,
+  setLoginModalOpen = () => console.log(),
   isLoading,
   setIsLoading,
   open,
@@ -22,6 +23,9 @@ export const LoginModal: FC<IModalLogin> = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signUpModalOpen, setSignUpModalOpen] = useState(false);
+  const [forgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
+  const [isCodeReset, setIsCodeReset] = useState(false);
+  const [isPasswordReset, setIsPasswordReset] = useState(false);
 
   const handleSignUp = async (
     email: string,
@@ -45,6 +49,85 @@ export const LoginModal: FC<IModalLogin> = ({
 
       if (response && response.status === "success") {
         handleLogin(email, password);
+        setIsCodeReset(true);
+      }
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleForgotPassword = async (email: string) => {
+    setIsLoading(true);
+
+    try {
+      const response = await sendApiRequest<IApiResponse>(
+        "http://localhost:3500/users/forgotPassword",
+        "POST",
+        {
+          email,
+        },
+      );
+
+      if (response && response.status === "success") {
+        toast.success("Check your email for a reset code");
+        setIsCodeReset(true);
+      }
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleGetResetCode = async (email: string, code: number) => {
+    setIsLoading(true);
+
+    try {
+      const response = await sendApiRequest<IApiResponse>(
+        "http://localhost:3500/users/getCode",
+        "POST",
+        {
+          email,
+          code,
+        },
+      );
+
+      if (response && response.status === "success") {
+        setIsCodeReset(false);
+        setIsPasswordReset(true);
+      }
+    } catch (error) {
+      toast.error(`${error}`);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleResetPassword = async (
+    email: string,
+    code: number,
+    newPassword: string,
+    newPasswordConfirm: string,
+  ) => {
+    setIsLoading(true);
+
+    try {
+      const response = await sendApiRequest<IApiResponse>(
+        "http://localhost:3500/users/resetPassword",
+        "PATCH",
+        {
+          email,
+          code,
+          newPassword,
+          newPasswordConfirm,
+        },
+      );
+
+      if (response && response.status === "success") {
+        toast.success("Password reset successful");
+        setForgotPasswordModalOpen(false);
       }
     } catch (error) {
       toast.error(`${error}`);
@@ -68,6 +151,9 @@ export const LoginModal: FC<IModalLogin> = ({
         sx={{
           boxShadow: 24,
           backdropFilter: "blur(4px)",
+          display: `${
+            (isLoading || signUpModalOpen || forgotPasswordModalOpen) && "none"
+          }`,
         }}
       >
         <Box
@@ -90,7 +176,6 @@ export const LoginModal: FC<IModalLogin> = ({
             margin="normal"
             disabled={isLoading}
           />
-
           <PasswordInput
             id="password"
             value={password}
@@ -99,7 +184,6 @@ export const LoginModal: FC<IModalLogin> = ({
             label="Password"
             size="medium"
           />
-
           <Button
             variant="contained"
             color="primary"
@@ -107,6 +191,15 @@ export const LoginModal: FC<IModalLogin> = ({
             disabled={isLoading || !email || !password}
           >
             Submit
+          </Button>
+          <Button
+            color="secondary"
+            disabled={isLoading}
+            onClick={() => {
+              setForgotPasswordModalOpen(!forgotPasswordModalOpen);
+            }}
+          >
+            Forgot Password?
           </Button>
           <Button
             color="secondary"
@@ -120,14 +213,32 @@ export const LoginModal: FC<IModalLogin> = ({
         </Box>
       </Modal>
 
+      {forgotPasswordModalOpen && (
+        <ModalForgotPassword
+          isCodeReset={isCodeReset}
+          isLoading={isLoading}
+          handleClose={() => {
+            setForgotPasswordModalOpen(false);
+            setLoginModalOpen(false);
+          }}
+          open={forgotPasswordModalOpen}
+          handleForgotPassword={handleForgotPassword}
+          handleResetPassword={handleResetPassword}
+          handleGetResetCode={handleGetResetCode}
+          isPasswordReset={isPasswordReset}
+        />
+      )}
+
       {signUpModalOpen && (
         <SignupModal
+          setSignUpModalOpen={setSignUpModalOpen}
           loginModalOpen={loginModalOpen}
           setLoginModalOpen={setLoginModalOpen}
           isLoading={isLoading}
           open={signUpModalOpen}
           handleClose={() => {
             setSignUpModalOpen(false);
+            setLoginModalOpen(false);
           }}
           handleSignUp={handleSignUp}
         />

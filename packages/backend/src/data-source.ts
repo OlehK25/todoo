@@ -1,6 +1,8 @@
 import { DataSource } from "typeorm";
+
 import { Task } from "./tasks/tasks.entity";
 import { User } from "./users/users.entity";
+import { PasswordResetToken } from "./auth/password.entity";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -9,7 +11,7 @@ export const AppDataSource = new DataSource({
   username: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DB,
-  entities: [Task, User],
+  entities: [Task, User, PasswordResetToken],
   logging: true,
   synchronize: true,
 });

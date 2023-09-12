@@ -42,6 +42,7 @@ export const authMiddleware = async (
     return next();
   } catch (error) {
     if (error instanceof Error) {
+      console.error("JWT Error:", error);
       if (error.name === "JsonWebTokenError") {
         return res.status(403).json({ error: "Invalid Token!" });
       }

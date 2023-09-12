@@ -18,6 +18,15 @@ usersRouter.post(
   loginValidation,
   authController.login.bind(authController),
 );
+usersRouter.post(
+  "/forgotPassword",
+  authController.forgotPassword.bind(authController),
+);
+usersRouter.post("/getCode", authController.getCode.bind(authController));
+usersRouter.patch(
+  "/resetPassword",
+  authController.resetPassword.bind(authController),
+);
 
 usersRouter.use(authMiddleware);
 usersRouter.get("/logout", authController.logout.bind(authController));

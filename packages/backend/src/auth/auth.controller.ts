@@ -3,10 +3,13 @@ import { validationResult } from "express-validator";
 import { plainToInstance } from "class-transformer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+// import { validate } from "deep-email-validator";
 
 import { AppDataSource } from "../data-source";
 import { User } from "../users/users.entity";
 import { Role } from "../enums/Role";
+import { Email } from "../utils/email";
+import { PasswordResetToken } from "./password.entity";
 
 dotenv.config({ path: "../../.env" });
 
@@ -16,6 +19,10 @@ const signToken = (id: string) => {
   });
 };
 
+const generateCode = (): string => {
+  return Math.floor(10000 + Math.random() * 90000).toString();
+};
+
 class AuthController {
   constructor() {
     this.login = this.login.bind(this);
@@ -23,6 +30,9 @@ class AuthController {
     this.logout = this.logout.bind(this);
     this.createSendToken = this.createSendToken.bind(this);
     this.restrictTo(...Object.values(Role));
+    this.forgotPassword = this.forgotPassword.bind(this);
+    this.getCode = this.getCode.bind(this);
+    this.resetPassword = this.resetPassword.bind(this);
   }
 
   public createSendToken = async (
@@ -90,6 +100,17 @@ class AuthController {
       return res.status(400).json({ error: "All fields are required!" });
     }
 
+    // const { valid } = await validate({
+    //   email,
+    //   validateSMTP: false,
+    // });
+    //
+    // if (!valid) {
+    //   return res.status(400).json({
+    //     error: `Email isn\`t valid. Please try again!`,
+    //   });
+    // }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ error: errors.array() });
@@ -118,6 +139,9 @@ class AuthController {
         name,
         verified: false,
       });
+
+      const url = `${req.protocol}://localhost:3000`;
+      await new Email(newUser, url).sendWelcome();
 
       const createdUser = await AppDataSource.getRepository(User).save(newUser);
 
@@ -151,6 +175,115 @@ class AuthController {
 
       return next();
     };
+
+  public forgotPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
+    const { email } = req.body;
+
+    try {
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { email },
+      });
+      if (!user) {
+        return res
+          .status(404)
+          .json({ error: "There's no user with this email address." });
+      }
+
+      const code = generateCode();
+      const resetToken = new PasswordResetToken();
+      resetToken.userId = user.id;
+      resetToken.token = +code;
+      resetToken.expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes from now
+
+      await AppDataSource.getRepository(PasswordResetToken).save(resetToken);
+
+      await new Email(user, code).sendPasswordReset();
+
+      res
+        .status(200)
+        .json({ status: "success", message: "Reset code sent to email!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
+  public getCode = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
+    const { email, code } = req.body;
+
+    try {
+      const userI = await AppDataSource.getRepository(User).findOne({
+        where: { email },
+      });
+      if (!userI) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      const resetToken = await AppDataSource.getRepository(
+        PasswordResetToken,
+      ).findOne({ where: { userId: userI.id, token: code } });
+      if (!resetToken) {
+        return res.status(400).json({ error: "Invalid reset code." });
+      }
+
+      if (resetToken.expiresAt < new Date()) {
+        return res.status(400).json({ error: "Reset code has expired." });
+      }
+
+      res.status(200).json({ status: "success", message: "Code is valid!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
+  public resetPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<Response | void> => {
+    const { email, code, newPassword, newPasswordConfirm } = req.body;
+
+    try {
+      if (newPassword !== newPasswordConfirm)
+        return res.status(400).json({ error: "Passwords don`t match" });
+
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { email },
+      });
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      const resetToken = await AppDataSource.getRepository(
+        PasswordResetToken,
+      ).findOne({ where: { userId: user.id, token: code } });
+      if (!resetToken) {
+        return res.status(400).json({ error: "Invalid reset code." });
+      }
+
+      if (resetToken.expiresAt < new Date()) {
+        return res.status(400).json({ error: "Reset code has expired." });
+      }
+
+      user.password = newPassword;
+      await user.hashPassword();
+      await AppDataSource.getRepository(User).save(user);
+      await AppDataSource.getRepository(PasswordResetToken).remove(resetToken);
+
+      res
+        .status(200)
+        .json({ status: "success", message: "Password reset successfully!" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
 }
 
 export const authController = new AuthController();

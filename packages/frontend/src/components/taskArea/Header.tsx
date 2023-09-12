@@ -22,6 +22,7 @@ import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { ReusableModal } from "../modals/ReusableModal";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { IHeader } from "./interfaces/IHeader";
+import { Loader } from "../ui/Loader";
 
 export const Header: FC<IHeader> = ({
   isClickedAccount = false,
@@ -90,7 +91,7 @@ export const Header: FC<IHeader> = ({
       alignItems="center"
     >
       <h2>Status Of Your Tasks As On {format(new Date(), "PPPP")}</h2>
-
+      {isLoading && <Loader />}
       <Box>
         <Fab
           color="primary"

@@ -6,6 +6,7 @@ import { IModalSignup } from "./interfaces/IModalSignup";
 import { PasswordInput } from "../user/_userPassword";
 
 export const SignupModal: FC<IModalSignup> = ({
+  setSignUpModalOpen = () => console.log(),
   loginModalOpen = false,
   setLoginModalOpen = () => console.log(),
   isLoading,
@@ -65,8 +66,8 @@ export const SignupModal: FC<IModalSignup> = ({
     setErrors(newErrors);
 
     if (Object.values(newErrors).every((error) => error === null)) {
+      setLoginModalOpen(false);
       handleSignUp(email, password, passwordConfirm, username);
-      handleClose();
     }
   };
 
@@ -153,7 +154,7 @@ export const SignupModal: FC<IModalSignup> = ({
           color="secondary"
           onClick={() => {
             setLoginModalOpen(loginModalOpen);
-            handleClose();
+            setSignUpModalOpen(false);
           }}
           disabled={isLoading}
         >

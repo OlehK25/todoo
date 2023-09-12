@@ -1,4 +1,5 @@
 export interface IModalSignup {
+  setSignUpModalOpen?: (value: boolean) => void;
   loginModalOpen?: boolean;
   setLoginModalOpen?: (value: boolean) => void;
   isLoading: boolean;
