@@ -128,6 +128,8 @@ export const LoginModal: FC<IModalLogin> = ({
       if (response && response.status === "success") {
         toast.success("Password reset successful");
         setForgotPasswordModalOpen(false);
+        setIsCodeReset(false);
+        setIsPasswordReset(false);
       }
     } catch (error) {
       toast.error(`${error}`);

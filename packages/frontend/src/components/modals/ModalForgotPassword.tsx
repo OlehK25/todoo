@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FC, ReactElement, useState } from "react";
+import { FC, ReactElement, useEffect, useState } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 
 import { IModalForgot } from "./interfaces/IModalForgot";
@@ -20,6 +20,30 @@ export const ModalForgotPassword: FC<IModalForgot> = ({
   const [code, setCode] = useState(0);
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
+  const [canResend, setCanResend] = useState(true);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+
+  const handleResend = () => {
+    if (canResend) {
+      handleForgotPassword(email);
+      setCanResend(false);
+      setTimeRemaining(45);
+    }
+  };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (timeRemaining > 0) {
+      timer = setTimeout(() => {
+        setTimeRemaining((prev) => prev - 1);
+      }, 1000);
+    } else if (timeRemaining === 0) {
+      setCanResend(true);
+    }
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [timeRemaining]);
 
   function submitHandler() {
     if (isCodeReset && !isPasswordReset) {
@@ -98,7 +122,13 @@ export const ModalForgotPassword: FC<IModalForgot> = ({
         <Button
           variant="contained"
           color="primary"
-          onClick={submitHandler}
+          onClick={() => {
+            if (!isCodeReset && !isPasswordReset) {
+              setCanResend(false);
+              setTimeRemaining(45);
+            }
+            submitHandler();
+          }}
           disabled={
             isLoading ||
             !email ||
@@ -109,8 +139,12 @@ export const ModalForgotPassword: FC<IModalForgot> = ({
           Submit
         </Button>
         {isCodeReset && (
-          <Button color="secondary" onClick={() => {}} disabled={isLoading}>
-            Don`t get code? Resend
+          <Button
+            color="secondary"
+            onClick={handleResend}
+            disabled={isLoading || !canResend}
+          >
+            Don`t get code? Resend {timeRemaining > 0 && `(${timeRemaining}s)`}
           </Button>
         )}
       </Box>
