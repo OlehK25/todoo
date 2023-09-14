@@ -1,0 +1,14 @@
+name: My Monorepo Blueprint
+description: Blueprint for a monorepo with a backend and frontend application
+
+deployment_type: monorepo
+
+repository: https://github.com/OlehK25/todoo
+
+build_filters:
+  - ./packages/backend/**
+  - ./packages/frontend/**
+
+environment:
+  DATABASE_URL: mysql://simpleuser:@S9cR9T@@mysql:3306/tododb
+  JWT_SECRET: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik9sZWggS296YWsifQ.ikZmEZCqGJ_S_n8iiokrka-kD_-opNY3xu_5pjGN6Yo
