@@ -1,0 +1,4 @@
+build:
+  docker:
+    web: packages/backend/Dockerfile.backend
+    frontend: packages/frontend/Dockerfile.frontend
