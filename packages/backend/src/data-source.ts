@@ -6,11 +6,11 @@ import { PasswordResetToken } from "./auth/password.entity";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
-  host: process.env.MYSQL_HOST,
   port: 3306,
-  username: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DB,
+  host: process.env.CLEARDB_HOST || process.env.MYSQL_HOST,
+  username: process.env.CLEARDB_USER || process.env.MYSQL_USER,
+  password: process.env.CLEARDB_PASSWORD || process.env.MYSQL_PASSWORD,
+  database: process.env.CLEARDB_DB || process.env.MYSQL_DB,
   entities: [Task, User, PasswordResetToken],
   logging: true,
   synchronize: true,
