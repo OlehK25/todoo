@@ -1,6 +1,8 @@
+import { backendURL } from "../../helpers/constants";
+
 export const fetchUserDetails = async (token: string) => {
   if (!token) return;
-  const response = await fetch("http://localhost:3500/users/me", {
+  const response = await fetch(`${backendURL}/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

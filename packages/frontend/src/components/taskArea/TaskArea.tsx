@@ -22,6 +22,7 @@ import { TaskStatusChangedContext } from "../../context";
 import { Header } from "./Header";
 import { ITaskArea } from "./interfaces/ITaskArea";
 import { StrictModeDroppable } from "../task/Droppable";
+import { backendURL } from "../../helpers/constants";
 
 export const TaskArea: FC<ITaskArea> = ({
   isClickedAccount = false,
@@ -39,22 +40,22 @@ export const TaskArea: FC<ITaskArea> = ({
     if (!isAuthenticated) {
       return [];
     }
-    return sendApiRequest<ITaskAPI[]>("http://localhost:3500/tasks", "GET");
+    return sendApiRequest<ITaskAPI[]>(`${backendURL}/tasks`, "GET");
   });
 
   const [tasks, setTasks] = useState(data);
 
   const updateTaskMutation = useMutation((data: IUpdateTask) =>
-    sendApiRequest("http://localhost:3500/tasks", "PUT", data),
+    sendApiRequest(`${backendURL}/tasks`, "PUT", data),
   );
 
   const updateTaskOrderMutation = useMutation(
     (data: { id: string; order: number }) =>
-      sendApiRequest(`http://localhost:3500/tasks/order`, "PUT", data),
+      sendApiRequest(`${backendURL}/tasks/order`, "PUT", data),
   );
 
   const deleteTaskMutation = useMutation((id: string) =>
-    sendApiRequest(`http://localhost:3500/tasks/${id}`, "DELETE"),
+    sendApiRequest(`${backendURL}/tasks/${id}`, "DELETE"),
   );
 
   function countTasksByStatus(status: Status | string) {

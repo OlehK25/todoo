@@ -9,6 +9,7 @@ import { ReusableModal } from "../modals/ReusableModal";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { UserContext } from "../../context";
+import { backendURL } from "../../helpers/constants";
 
 export const DeleteAccount: FC<IDeleteAccount> = ({
   setIsClickedAccount = () => console.log(),
@@ -23,7 +24,7 @@ export const DeleteAccount: FC<IDeleteAccount> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/deleteMe",
+        `${backendURL}/users/deleteMe`,
         "DELETE",
       );
 

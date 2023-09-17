@@ -17,6 +17,7 @@ import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { PasswordInput } from "./_userPassword";
 import { DeleteAccount } from "./DeleteAccount";
+import { backendURL } from "../../helpers/constants";
 
 export const UpdateAccount: FC<IUpdateAccount> = ({
   setIsClickedAccount = () => console.log(),
@@ -46,7 +47,7 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/updateMe",
+        `${backendURL}/users/updateMe`,
         "PATCH",
         body,
       );

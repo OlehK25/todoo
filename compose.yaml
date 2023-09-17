@@ -4,7 +4,7 @@ services:
     container_name: backend
     build:
       context: ./packages/backend
-      dockerfile: packages/backend/Dockerfile.web
+      dockerfile: packages/backend/Dockerfile.backend
     ports:
       - "${PORT}:${PORT}"
     depends_on:
@@ -46,8 +46,8 @@ services:
     restart: always
     container_name: frontend
     build:
-      context: ./packages/frontend
-      dockerfile: packages/frontend/Dockerfile.web
+      context: .
+      dockerfile: packages/frontend/Dockerfile.frontend
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:

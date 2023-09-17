@@ -25,6 +25,7 @@ import { Priority } from "./enums/priority";
 import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { ICreateTask } from "../taskArea/interfaces/ICreateTask";
 import { TaskStatusChangedContext } from "../../context/taskStatusChangedContext/TaskStatusChangedContext";
+import { backendURL } from "../../helpers/constants";
 
 export const CreateTaskForm: FC = (): ReactElement => {
   const [title, setTitle] = useState<string>("");
@@ -37,7 +38,7 @@ export const CreateTaskForm: FC = (): ReactElement => {
   const tasksUpdatedContext = useContext(TaskStatusChangedContext);
 
   const createTaskMutation = useMutation((data: ICreateTask) =>
-    sendApiRequest("http://localhost:3500/tasks", "POST", data),
+    sendApiRequest(`${backendURL}/tasks`, "POST", data),
   );
 
   function handleCreateTask() {
@@ -54,7 +55,6 @@ export const CreateTaskForm: FC = (): ReactElement => {
     createTaskMutation.mutate(task);
   }
 
-  // Manage Side Effects inside the application
   useEffect(() => {
     if (createTaskMutation.isSuccess) {
       setShowSuccessAlert(true);

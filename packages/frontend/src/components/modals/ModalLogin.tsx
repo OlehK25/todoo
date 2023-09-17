@@ -10,6 +10,7 @@ import { sendApiRequest } from "../../helpers/sendApiRequest";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { PasswordInput } from "../user/_userPassword";
 import { ModalForgotPassword } from "./ModalForgotPassword";
+import { backendURL } from "../../helpers/constants";
 
 export const LoginModal: FC<IModalLogin> = ({
   loginModalOpen = false,
@@ -37,7 +38,7 @@ export const LoginModal: FC<IModalLogin> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/signup",
+        `${backendURL}/users/signup`,
         "POST",
         {
           email,
@@ -63,7 +64,7 @@ export const LoginModal: FC<IModalLogin> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/forgotPassword",
+        `${backendURL}/users/forgotPassword`,
         "POST",
         {
           email,
@@ -86,7 +87,7 @@ export const LoginModal: FC<IModalLogin> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/getCode",
+        `${backendURL}/users/getCode`,
         "POST",
         {
           email,
@@ -115,7 +116,7 @@ export const LoginModal: FC<IModalLogin> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/resetPassword",
+        `${backendURL}/users/resetPassword`,
         "PATCH",
         {
           email,

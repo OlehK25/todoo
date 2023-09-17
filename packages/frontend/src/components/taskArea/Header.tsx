@@ -23,6 +23,7 @@ import { ReusableModal } from "../modals/ReusableModal";
 import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { IHeader } from "./interfaces/IHeader";
 import { Loader } from "../ui/Loader";
+import { backendURL } from "../../helpers/constants";
 
 export const Header: FC<IHeader> = ({
   isClickedAccount = false,
@@ -55,7 +56,7 @@ export const Header: FC<IHeader> = ({
 
     try {
       const response = await sendApiRequest<IApiResponse>(
-        "http://localhost:3500/users/login",
+        `${backendURL}/users/login`,
         "POST",
         { email, password },
       );
