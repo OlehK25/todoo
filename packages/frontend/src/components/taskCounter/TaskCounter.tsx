@@ -20,7 +20,9 @@ export const TaskCounter: FC<ITaskCounter> = (props): ReactElement => {
         <Avatar
           sx={{
             backgroundColor: `${
-              selectedStatus === status ? "#3D246C" : "transparent"
+              selectedStatus === status
+                ? emitCorrectBorderColor(status)
+                : "transparent"
             }`,
             border: "5px solid",
             width: "96px",
@@ -29,7 +31,11 @@ export const TaskCounter: FC<ITaskCounter> = (props): ReactElement => {
             borderColor: `${emitCorrectBorderColor(status)}`,
           }}
         >
-          <Typography color="#ffffff" variant="h4">
+          <Typography
+            color={`${selectedStatus === status ? "#000" : "#ffffff"}`}
+            fontWeight={`${selectedStatus === status ? "700" : "500"}`}
+            variant="h4"
+          >
             {count}
           </Typography>
         </Avatar>

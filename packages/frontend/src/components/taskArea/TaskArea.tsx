@@ -1,8 +1,10 @@
 import React, {
   FC,
   ReactElement,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -88,27 +90,30 @@ export const TaskArea: FC<ITaskArea> = ({
     setTasks(data);
   }, [data]);
 
-  function handleStatusChange(
-    e: React.ChangeEvent<HTMLInputElement>,
-    id: string,
-  ) {
-    updateTaskMutation.mutate({
-      id,
-      status: e.target.checked ? Status.inProgress : Status.todo,
-    });
-  }
+  const handleStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+      updateTaskMutation.mutate({
+        id,
+        status: e.target.checked ? Status.inProgress : Status.todo,
+      });
+    },
+    [updateTaskMutation],
+  );
 
-  function handlerMarkComplete(
-    e:
-      | React.MouseEvent<HTMLButtonElement>
-      | React.MouseEvent<HTMLAnchorElement>,
-    id: string,
-  ) {
-    updateTaskMutation.mutate({
-      id,
-      status: Status.completed,
-    });
-  }
+  const handlerMarkComplete = useCallback(
+    (
+      e:
+        | React.MouseEvent<HTMLButtonElement>
+        | React.MouseEvent<HTMLAnchorElement>,
+      id: string,
+    ) => {
+      updateTaskMutation.mutate({
+        id,
+        status: Status.completed,
+      });
+    },
+    [updateTaskMutation],
+  );
 
   function handlerDeleteTask(
     e:
@@ -119,47 +124,46 @@ export const TaskArea: FC<ITaskArea> = ({
     deleteTaskMutation.mutate(id);
   }
 
-  function handleOnDragEnd(result: DropResult) {
-    if (!result.destination) return;
+  const handleOnDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
 
-    if (tasks) {
-      const reorderedTasks = Array.from(tasks);
-      const [removed] = reorderedTasks.splice(result.source.index, 1);
-      reorderedTasks.splice(result.destination.index, 0, removed);
+      if (tasks) {
+        const reorderedTasks = Array.from(tasks);
+        const [removed] = reorderedTasks.splice(result.source.index, 1);
+        reorderedTasks.splice(result.destination.index, 0, removed);
 
-      setTasks(reorderedTasks);
+        setTasks(reorderedTasks);
 
-      reorderedTasks.forEach((task, index) => {
-        updateTaskOrderMutation.mutate({
-          id: task.id,
-          order: index,
+        reorderedTasks.forEach((task, index) => {
+          updateTaskOrderMutation.mutate({
+            id: task.id,
+            order: index,
+          });
         });
-      });
-    }
-  }
+      }
+    },
+    [tasks, updateTaskOrderMutation],
+  );
 
-  const toggleSelectedStatus = (status: Status | string) => {
-    if (selectedStatus === status) {
-      setSelectedStatus("ALL");
-    } else {
-      setSelectedStatus(status);
-    }
-  };
+  const toggleSelectedStatus = useCallback((status: Status | string) => {
+    setSelectedStatus((prev) => (prev === status ? "ALL" : status));
+  }, []);
 
-  const filteredTasks = Array.isArray(tasks)
-    ? tasks.filter((task) => {
-        switch (selectedStatus) {
-          case Status.completed:
-            return task.status === Status.completed;
-          case Status.todo:
-            return task.status === Status.todo;
-          case Status.inProgress:
-            return task.status === Status.inProgress;
-          default:
-            return true;
-        }
-      })
-    : [];
+  const filteredTasks = useMemo(() => {
+    if (!Array.isArray(tasks)) return [];
+
+    switch (selectedStatus) {
+      case Status.completed:
+        return tasks.filter((task) => task.status === Status.completed);
+      case Status.todo:
+        return tasks.filter((task) => task.status === Status.todo);
+      case Status.inProgress:
+        return tasks.filter((task) => task.status === Status.inProgress);
+      default:
+        return tasks;
+    }
+  }, [tasks, selectedStatus]);
 
   return (
     <Grid item md={8} px={4}>
