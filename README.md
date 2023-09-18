@@ -1,7 +1,7 @@
 # 📃 Todo List Web Application
 
 A basic project that allows you to manage and plan your day, saving all tasks in a convenient service.
- > Visit the live app [here]() `(SOON)`
+ > Visit the live app [here](https://todoo-kohl.vercel.app/)
 
 ## 🗒️ Implementation\Technology Stack
 
