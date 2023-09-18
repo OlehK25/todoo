@@ -8,6 +8,7 @@ import {
   ListItemIcon,
   Menu,
   MenuItem,
+  Typography,
 } from "@mui/material";
 import { format } from "date-fns";
 import AddIcon from "@mui/icons-material/Add";
@@ -85,15 +86,39 @@ export const Header: FC<IHeader> = ({
 
   return (
     <Box
-      mb={8}
-      px={4}
+      mt={{ xs: 2, md: 4 }}
+      mb={{ xs: 2, md: 8 }}
+      px={{ xs: 2, md: 4 }}
       display="flex"
-      justifyContent="space-around"
+      flexDirection={{ xs: "column", md: "row" }}
+      justifyContent="space-between"
       alignItems="center"
     >
-      <h2>Status Of Your Tasks As On {format(new Date(), "PPPP")}</h2>
+      <Typography
+        sx={{
+          fontSize: { xs: "16px", md: "24px" },
+          fontWeight: { xs: 400, md: 700 },
+        }}
+        textAlign="center"
+        mb={{ xs: 2, md: 0 }}
+      >
+        Status Of Your Tasks As On {format(new Date(), "PPPP")}
+      </Typography>
+
       {isLoading && <Loader />}
-      <Box>
+
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mt={{ xs: 2, md: 0 }}
+        sx={{
+          display: {
+            xs: `${(isClickedAccount || isClicked) && "none"}`,
+            md: "flex",
+          },
+        }}
+      >
         <Fab
           color="primary"
           aria-label="add"
@@ -115,6 +140,7 @@ export const Header: FC<IHeader> = ({
           size="small"
           sx={{
             mx: "5px",
+            display: { xs: `${isClicked && "none"}`, md: "flex" },
           }}
           onClick={handleClick}
           aria-controls={open ? "account-menu" : undefined}

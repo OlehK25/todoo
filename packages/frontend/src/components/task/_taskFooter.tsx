@@ -19,12 +19,14 @@ export const TaskFooter: FC<ITaskFooter> = (props): ReactElement => {
       justifyContent="space-between"
       alignItems="center"
       mt={4}
+      sx={{ flexDirection: { xs: "column", sm: "row" } }}
     >
       <FormControlLabel
-        label="In Progress"
+        label="Proceeding"
+        sx={{ fontSize: { xs: "10px", sm: "12px", md: "16px" } }}
         control={
           <Switch
-            defaultChecked={status === Status.inProgress}
+            checked={status === Status.inProgress}
             color="warning"
             onChange={(e) => onStatusChange(e, id)}
           />

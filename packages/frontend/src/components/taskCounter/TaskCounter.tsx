@@ -10,45 +10,49 @@ export const TaskCounter: FC<ITaskCounter> = (props): ReactElement => {
   const { status = "ALL", count = 0, selectedStatus = "ALL" } = props;
 
   return (
-    <>
-      <Box
-        display="flex"
-        flexDirection="column"
-        justifyContent="center"
-        alignItems="center"
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      sx={{
+        padding: { sm: "16px", md: "32px" },
+      }}
+    >
+      <Avatar
+        sx={{
+          backgroundColor: `${
+            selectedStatus === status
+              ? emitCorrectBorderColor(status)
+              : "transparent"
+          }`,
+          border: "5px solid",
+          width: { sm: "65px", md: "96px" },
+          height: { sm: "65px", md: "96px" },
+          marginBottom: "16px",
+          borderColor: `${emitCorrectBorderColor(status)}`,
+        }}
       >
-        <Avatar
+        <Typography
+          color={`${selectedStatus === status ? "#000" : "#ffffff"}`}
+          fontWeight={`${selectedStatus === status ? "700" : "500"}`}
           sx={{
-            backgroundColor: `${
-              selectedStatus === status
-                ? emitCorrectBorderColor(status)
-                : "transparent"
-            }`,
-            border: "5px solid",
-            width: "96px",
-            height: "96px",
-            marginBottom: "16px",
-            borderColor: `${emitCorrectBorderColor(status)}`,
+            fontSize: { xs: "16px", sm: "24px", md: "32px" },
+            fontWeight: { xs: 400, md: 700 },
           }}
         >
-          <Typography
-            color={`${selectedStatus === status ? "#000" : "#ffffff"}`}
-            fontWeight={`${selectedStatus === status ? "700" : "500"}`}
-            variant="h4"
-          >
-            {count}
-          </Typography>
-        </Avatar>
-        <Typography
-          color="#ffffff"
-          fontWeight="bold"
-          fontSize="20px"
-          variant="h5"
-        >
-          {emitCorrectLabel(status)}
+          {count}
         </Typography>
-      </Box>
-    </>
+      </Avatar>
+      <Typography
+        color="#ffffff"
+        fontWeight="bold"
+        fontSize={{ xs: "11px", sm: "14px", md: "18px" }}
+        variant="h5"
+      >
+        {emitCorrectLabel(status)}
+      </Typography>
+    </Box>
   );
 };
 

@@ -8,7 +8,7 @@ export const emitCorrectLabel = (
     case Status.todo:
       return "Todo's";
     case Status.inProgress:
-      return "In progress";
+      return "Proceeding";
     case Status.completed:
       return "Completed";
     default:

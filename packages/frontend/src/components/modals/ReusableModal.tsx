@@ -17,7 +17,7 @@ export const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: { xs: "80%", sm: "350px", md: "400px" },
   bgcolor: "background.paper",
   borderRadius: "8px",
   border: "1px solid",

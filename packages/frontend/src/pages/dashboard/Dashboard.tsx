@@ -57,7 +57,10 @@ export const Dashboard: FC = (): ReactElement => {
         setIsClicked={() => setIsClicked(!isClicked)}
       />
       {isClicked && !isClickedAccount && (
-        <Sidebar isAuthenticated={isAuthenticated} />
+        <Sidebar
+          setIsClicked={setIsClicked}
+          isAuthenticated={isAuthenticated}
+        />
       )}
 
       {isClickedAccount && isAuthenticated && (

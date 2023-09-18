@@ -1,14 +1,6 @@
 import * as React from "react";
 import { FC, ReactElement, useContext, useState } from "react";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import toast from "react-hot-toast";
 
 import { IUpdateAccount } from "./interfaces/IUpdateAccount";
@@ -18,6 +10,7 @@ import { IApiResponse } from "../../helpers/interfaces/IApiResponse";
 import { PasswordInput } from "./_userPassword";
 import { DeleteAccount } from "./DeleteAccount";
 import { backendURL } from "../../helpers/constants";
+import { ReusableCloseIcon } from "../ui/ReusableCloseIcon";
 
 export const UpdateAccount: FC<IUpdateAccount> = ({
   setIsClickedAccount = () => console.log(),
@@ -80,15 +73,12 @@ export const UpdateAccount: FC<IUpdateAccount> = ({
       px={4}
       my={6}
     >
-      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-        <IconButton
-          size="medium"
-          color="secondary"
-          onClick={() => setIsClickedAccount(false)}
-        >
-          <CloseIcon fontSize="medium" />
-        </IconButton>
-      </Box>
+      <ReusableCloseIcon
+        onClick={() => setIsClickedAccount(false)}
+        color={"secondary"}
+        size={"medium"}
+        setAccount={true}
+      />
 
       <Typography mb={2} component="h2" variant="h6">
         Update your account name

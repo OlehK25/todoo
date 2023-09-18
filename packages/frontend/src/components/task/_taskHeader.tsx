@@ -23,28 +23,42 @@ export const TaskHeader: FC<ITaskHeader> = (props): ReactElement => {
   return (
     <Box display="flex" width="100%" justifyContent="space-between" mb={3}>
       <Box>
-        <Typography variant="h6">{title}</Typography>
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { sm: "18px", md: "20px" },
+          }}
+        >
+          {title}
+        </Typography>
       </Box>
       {!showCloseIcon && (
-        <Box>
+        <Box
+          sx={{
+            display: { xs: "none", sm: "block" },
+          }}
+        >
           <Chip variant="outlined" label={`${format(date, "PPP")}`} />
         </Box>
       )}
-      {showCloseIcon && (
-        <>
-          <IconButton size="small" color="secondary" onClick={handleOpen}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-          <ReusableModal
-            open={open}
-            handleClose={handleClose}
-            title="Delete Task?"
-            description="Are you sure you want to delete this task?"
-            onConfirm={(e) => handleDelete(e, props.id)}
-            confirmButtonIcon={<DeleteIcon />}
-          />
-        </>
-      )}
+
+      <Box
+        sx={{
+          display: { xs: "flex", sm: `${showCloseIcon ? "flex" : "none"}` },
+        }}
+      >
+        <IconButton size="small" color="secondary" onClick={handleOpen}>
+          <CloseIcon fontSize="small" />
+        </IconButton>
+        <ReusableModal
+          open={open}
+          handleClose={handleClose}
+          title="Delete Task?"
+          description="Are you sure you want to delete this task?"
+          onConfirm={(e) => handleDelete(e, props.id)}
+          confirmButtonIcon={<DeleteIcon />}
+        />
+      </Box>
     </Box>
   );
 };
