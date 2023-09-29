@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import { plainToInstance } from "class-transformer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-// import { validate } from "deep-email-validator";
+import { validate } from "deep-email-validator";
 
 import { AppDataSource } from "../data-source";
 import { User } from "../users/users.entity";
@@ -100,16 +100,16 @@ class AuthController {
       return res.status(400).json({ error: "All fields are required!" });
     }
 
-    // const { valid } = await validate({
-    //   email,
-    //   validateSMTP: false,
-    // });
-    //
-    // if (!valid) {
-    //   return res.status(400).json({
-    //     error: `Email isn\`t valid. Please try again!`,
-    //   });
-    // }
+    const { valid } = await validate({
+      email,
+      validateSMTP: false,
+    });
+
+    if (!valid) {
+      return res.status(400).json({
+        error: `Email isn\`t valid. Please try again!`,
+      });
+    }
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
