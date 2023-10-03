@@ -13,5 +13,5 @@ export const AppDataSource = new DataSource({
   database: process.env.JAWSDB_MARIA_DB || process.env.MYSQL_DB,
   entities: [Task, User, PasswordResetToken],
   logging: true,
-  synchronize: true,
+  synchronize: false,
 });
