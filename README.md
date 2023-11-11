@@ -1,6 +1,6 @@
 # 📃 Todo List Web Application
 
-A basic project that allows you to manage and plan your day, saving all tasks in a convenient service.
+The basic Todo project that allows you to manage and plan your day, saving all tasks in a convenient service.
  > Visit the live app [here](https://todoo-kohl.vercel.app/)
 
 ## 🗒️ Implementation\Technology Stack
@@ -11,8 +11,7 @@ A basic project that allows you to manage and plan your day, saving all tasks in
  - Context API;
  - React;
  - NodeJS, Express;
- - TypeORM;
- - MySQL;
+ - MySQL (TypeORM);
  - Docker Compose;
  - React-beautiful-dnd;
  - JWT;
